@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>百万的博客</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="description" content="Description" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css" />
+    <!-- KaTeX CSS -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css" />
+    <!-- 侧边栏折叠样式 - folder style -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar-folder.min.css" />
+    <style>
+      /* Maple Mono 字体 */
+      @font-face {
+        font-family: "Maple Mono";
+        font-style: normal;
+        font-display: swap;
+        font-weight: 400;
+        src:
+          url(https://cdn.jsdelivr.net/fontsource/fonts/maple-mono@latest/latin-400-normal.woff2) format("woff2"),
+          url(https://cdn.jsdelivr.net/fontsource/fonts/maple-mono@latest/latin-400-normal.woff) format("woff");
+      }
+
+      /* Shiki 代码块样式 */
+      .shiki {
+        border-radius: 8px;
+        padding: 16px;
+        overflow-x: auto;
+        font-family: "Maple Mono", "Fira Code", "Consolas", "Monaco", "Andale Mono", "Ubuntu Mono", monospace;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      .shiki code {
+        font-family: inherit;
+        background: none;
+      }
+
+      .update-time {
+        /* 文字颜色 */
+        color: gray;
+        /* 字体大小 */
+        font-size: 12px;
+        /* 文字对齐方式 */
+        text-align: left;
+        /* 上边距 */
+        margin-top: 20px;
+        /* 内边距 */
+        padding: 10px;
+        /* 顶部边框 - 浅灰色分割线 */
+        border-top: 1px solid #eee;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script>
+      window.$docsify = {
+        name: "百万的博客",
+        loadSidebar: true,
+        topMargin: 30,
+        homepage: "home.md",
+
+        // 代码复制
+        copyCode: {
+          buttonText: "复制",
+          errorText: "失败",
+          successText: "已复制",
+        },
+
+        // 分页导航
+        pagination: {
+          previousText: "上一篇",
+          nextText: "下一篇",
+          crossChapter: true,
+          crossChapterText: true,
+        },
+
+        // 字数统计
+        count: {
+          countable: true,
+          fontsize: "0.9em",
+          language: "chinese",
+        },
+
+        // 最后更新时间
+        timeUpdater: {
+          text: "<div class='update-time'>最后更新时间: {docsify-updated}</div>",
+          formatUpdated: "{YYYY}/{MM}/{DD} {HH}:{mm}",
+          whereToPlace: "bottom",
+        },
+
+        // 侧边栏折叠配置 - 默认展开层级
+        sidebarDisplayLevel: 1,
+
+        // 全文搜索配置
+        search: {
+          maxAge: 86400000, // 过期时间，单位毫秒，默认一天
+          paths: "auto", // 自动索引所有页面
+          placeholder: "搜索文档...",
+          noData: "找不到相关结果",
+          depth: 5, // 搜索标题的最大层级
+          hideOtherSidebarContent: false, // 是否隐藏其他侧边栏内容
+        },
+
+        // Shiki 代码高亮插件
+        plugins: [
+          function (hook, vm) {
+            hook.doneEach(async function () {
+              if (!window.shikiHighlight) return;
+
+              for (const block of document.querySelectorAll("pre code")) {
+                const pre = block.parentElement;
+                if (pre.classList.contains("shiki")) continue;
+
+                const lang =
+                  Array.from(block.classList)
+                    .find((c) => c.startsWith("lang-"))
+                    ?.replace("lang-", "") || "text";
+
+                pre.outerHTML = await window.shikiHighlight(block.textContent, lang);
+              }
+            });
+          },
+        ],
+
+        // Mermaid 配置
+        mermaidConfig: {
+          querySelector: ".mermaid",
+        },
+      };
+    </script>
+    <!-- Docsify v4 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+
+    <!-- plugins -->
+
+    <!-- KaTeX -->
+    <script src="//cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/marked@4"></script>
+    <script src="//cdn.jsdelivr.net/npm/docsify-katex@latest/dist/docsify-katex.js"></script>
+    <!-- 代码复制插件 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify-copy-code"></script>
+    <!-- 分页导航插件 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
+    <!-- 图片缩放插件 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
+    <!-- 字数统计插件 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify-count@latest/dist/countable.min.js"></script>
+    <!-- 最后更新时间插件 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify-updated/src/time-updater.min.js"></script>
+    <!-- 搜索插件 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+    <!-- Mermaid -->
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({ startOnLoad: true });
+      window.mermaid = mermaid;
+    </script>
+    <script src="//unpkg.com/docsify-mermaid@2.0.1/dist/docsify-mermaid.js"></script>
+    <!-- 侧边栏折叠插件 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
+    <!-- Shiki 代码高亮 -->
+    <script type="module">
+      import { codeToHtml } from "https://cdn.jsdelivr.net/npm/shiki@1/+esm";
+
+      const langMap = {
+        js: "javascript",
+        ts: "typescript",
+        py: "python",
+        sh: "bash",
+        shell: "bash",
+        yml: "yaml",
+        md: "markdown",
+      };
+
+      window.shikiHighlight = async (code, lang) => {
+        lang = langMap[lang] || lang || "text";
+        return await codeToHtml(code, { lang, theme: "catppuccin-latte" });
+      };
+    </script>
+
+    <!-- 红心点击特效 -->
+    <script src="https://cdn.jsdelivr.net/gh/mukeshkushwahae/click-heart-animation@main/dist/click-heart-animation.min.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        ClickHeartAnimation.init();
+      });
+    </script>
+  </body>
+</html>

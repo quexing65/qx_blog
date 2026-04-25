@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Package lock
+package-lock.json
+
+# Environment variables
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# AI
+.claude/
+.cursor/
+.trae/

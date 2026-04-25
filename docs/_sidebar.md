@@ -1,0 +1,29 @@
+- [HomePage](/)
+
+- API_代理
+  - [Poe 大模型 API 代理](note/API_代理/Poe_大模型_API_代理.md)
+  - [清程极智 AIPing API 代理](note/API_代理/清程极智_AIPing_API_代理.md)
+  - [百灵大模型 API 代理](note/API_代理/百灵大模型_API_代理.md)
+  - [美团 LongCat API代理](note/API_代理/美团_LongCat_API代理.md)
+
+- dev
+  - [Cherry Studio 美化](note/dev/Cherry_Studio_美化.md)
+  - [Docker 基础（Linux）](note/dev/Docker_基础（Linux）.md)
+  - [git 下载与配置](note/dev/git_下载与配置.md)
+  - [TG 获取 Channel ID 与 TG BOT TOKEN](note/dev/TG_获取_Channel_ID_与_TG_BOT_TOKEN.md)
+  - [VSCode文件空包折叠展开](note/dev/VSCode文件空包折叠展开.md)
+  - [Windows 上禁用 CapsLock 键](note/dev/Windows_上禁用_CapsLock_键.md)
+  - [Windows 设置命令别名（alias）](note/dev/Windows_设置命令别名（alias）.md)
+  - [修复 Windows 数字显示成符号的异常](note/dev/修复_Windows_数字显示成符号的异常.md)
+  - [国内服务器安装 uv](note/dev/国内服务器安装_uv.md)
+  - [常用 git 命令](note/dev/常用_git_命令.md)
+  - [批量删除 kimi 网页对话](note/dev/批量删除_kimi_网页对话.md)
+  - [智谱 coding plan 接入 NewAPI](note/dev/智谱_coding_plan_接入_NewAPI.md)
+  - [让远程服务器走本地电脑的代理实现科学上网](note/dev/让远程服务器走本地电脑的代理实现科学上网.md)
+  - [豆包网页开启黑暗主题](note/dev/豆包网页开启黑暗主题.md)
+  - [霍格沃茨魔法学校](note/dev/霍格沃茨魔法学校.md)
+  - [霍格沃茨魔法学校（修订记录）](note/dev/霍格沃茨魔法学校（修订记录）.md)
+
+- 测试
+  - [我的第一篇笔记](note/测试/我的第一篇笔记.md)
+  - [测试教程](note/测试/测试教程.md)
