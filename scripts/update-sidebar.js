@@ -66,8 +66,8 @@ function renderSidebar(items, level = 0) {
     const item = items[i];
 
     if (item.type === "folder") {
-      // 渲染文件夹
-      content += `${indent}- ${item.name}\n`;
+      // 渲染文件夹标题：将下划线替换为空格用于展示（如"API_代理"显示为"API 代理"），文件链接路径仍使用原始文件夹名
+      content += `${indent}- ${item.name.replace(/_/g, " ")}\n`;
       // 递归渲染子项
       content += renderSidebar(item.children, level + 1);
       // 顶级文件夹之间添加空行
@@ -85,7 +85,7 @@ function renderSidebar(items, level = 0) {
 
 // 主程序
 const structure = scanDirectory(NOTE_DIR);
-const sidebarContent = `- [HomePage](/)\n\n${renderSidebar(structure)}`;
+const sidebarContent = renderSidebar(structure);
 
 // 更新 _sidebar.md
 fs.writeFileSync(SIDEBAR_FILE, sidebarContent);
