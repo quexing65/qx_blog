@@ -1,4 +1,8 @@
-# 欢迎来到百万的博客
+# 欢迎来到我的博客
+
+> 一个基于 [Docsify](https://docsify.js.org) 的极简静态博客
+
+## 文章列表
 
 - API 代理
   - [Poe 大模型 API 代理](note/API_代理/Poe_大模型_API_代理.md)
@@ -27,3 +31,9 @@
 - 测试
   - [我的第一篇笔记](note/测试/我的第一篇笔记.md)
   - [测试教程](note/测试/测试教程.md)
+
+
+## 联系我
+
+- 邮箱：yesbaiwan@gmail.com
+- GitHub：[Yesbaiwan](https://github.com/Yesbaiwan)

@@ -5,7 +5,7 @@ const NOTE_DIR = path.join(__dirname, "..", "docs", "note");
 const DOCS_DIR = path.join(__dirname, "..", "docs");
 const SIDEBAR_FILE = path.join(DOCS_DIR, "_sidebar.md");
 const HOME_FILE = path.join(DOCS_DIR, "home.md");
-const HOME_TITLE = "# 欢迎来到百万的博客";
+const TEMPLATE_FILE = path.join(__dirname, "template.md");
 
 /**
  * 将文件名转换为显示标题
@@ -91,8 +91,9 @@ const sidebarContent = renderSidebar(structure);
 fs.writeFileSync(SIDEBAR_FILE, sidebarContent);
 console.log(`✅ 侧边栏已更新: ${SIDEBAR_FILE}`);
 
-// 更新 Home.md（加上标题）
-const homeContent = `${HOME_TITLE}\n\n${sidebarContent}`;
+// 读取模板文件并生成 home.md
+const templateContent = fs.readFileSync(TEMPLATE_FILE, "utf-8");
+const homeContent = templateContent.replace("{{ARTICLE_LIST}}", sidebarContent);
 fs.writeFileSync(HOME_FILE, homeContent);
 console.log(`✅ 首页已更新: ${HOME_FILE}`);
 
