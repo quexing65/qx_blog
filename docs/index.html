@@ -180,8 +180,14 @@
       };
 
       window.shikiHighlight = async (code, lang) => {
+        lang = lang.toLowerCase();
         lang = langMap[lang] || lang || "text";
-        return await codeToHtml(code, { lang, theme: "catppuccin-latte" });
+        try {
+          return await codeToHtml(code, { lang, theme: "catppuccin-latte" });
+        } catch (e) {
+          console.warn(`Shiki: Language "${lang}" not found, fallback to text`);
+          return await codeToHtml(code, { lang: "text", theme: "catppuccin-latte" });
+        }
       };
     </script>
 

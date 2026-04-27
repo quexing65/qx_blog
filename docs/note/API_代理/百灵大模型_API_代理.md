@@ -15,16 +15,17 @@ export default {
   async fetch(req) {
     const url = new URL(req.url);
     if (url.pathname === "/") {
-      return new Response("Hello World", { status: 200 });
+      return new Response("获取密钥前往 https://ling.tbox.cn/open", { status: 200 });
     }
     if (url.pathname === "/models" || url.pathname === "/v1/models") {
       return Response.json({
         data: [
           { id: "Ling-1T", object: "model" },
-          { id: "Ring-1T", object: "model" },
           { id: "Ling-2.5-1T", object: "model" },
+          { id: "Ling-2.6-flash", object: "model" },
+          { id: "Ring-1T", object: "model" },
           { id: "Ring-2.5-1T", object: "model" },
-          { id: "AntAngelMed", object: "model" },
+          { id: "Ring-2.5-flash", object: "model" },
         ],
         object: "list",
       });

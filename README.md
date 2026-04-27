@@ -8,3 +8,11 @@
 # 更新侧边栏和首页
 node scripts/update-sidebar.js
 ```
+
+## 启动预览
+
+要预览博客，运行：
+
+```bash
+docsify serve docs
+```

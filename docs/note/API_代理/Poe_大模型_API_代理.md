@@ -11,7 +11,7 @@ export default {
     const BASE = "https://api.poe.com";
 
     if (url.pathname === "/") {
-      return new Response("Hello World", { status: 200 });
+      return new Response("获取密钥前往 https://poe.com/api/keys", { status: 200 });
     }
 
     if (url.pathname === "/models" || url.pathname === "/v1/models") {
