@@ -13,11 +13,11 @@
   - [清程极智 AIPing API 代理](note/API_代理/清程极智_AIPing_API_代理.md) 2026-04-27
 
 - dev
+  - [git 下载与配置](note/dev/git_下载与配置.md) 2026-04-30
   - [霍格沃茨魔法学校](note/dev/霍格沃茨魔法学校.md) 2026-04-30
   - [霍格沃茨魔法学校（修订记录）](note/dev/霍格沃茨魔法学校（修订记录）.md) 2026-04-30
   - [Cherry Studio 美化](note/dev/Cherry_Studio_美化.md) 2026-04-27
   - [Docker 基础（Linux）](note/dev/Docker_基础（Linux）.md) 2026-04-25
-  - [git 下载与配置](note/dev/git_下载与配置.md) 2026-04-25
   - [TG 获取 Channel ID 与 TG BOT TOKEN](note/dev/TG_获取_Channel_ID_与_TG_BOT_TOKEN.md) 2026-04-25
   - [VSCode文件空包折叠展开](note/dev/VSCode文件空包折叠展开.md) 2026-04-25
   - [Windows 上禁用 CapsLock 键](note/dev/Windows_上禁用_CapsLock_键.md) 2026-04-25
