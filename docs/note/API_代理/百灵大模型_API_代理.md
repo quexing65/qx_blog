@@ -6,7 +6,7 @@ API 获取页面：https://ling.tbox.cn/open
 
 ## 透明代理
 
-由于官方 API 没有模型列表接口，特此做此代理增加模型列表返回。官方 API 暂时只支持 Ling-1T 和 Ring-1T 两个模型，这里直接写死，其他请求透传给官方接口 https://api.tbox.cn/api/llm
+由于官方 API 没有模型列表接口，特此做此代理增加模型列表返回，其他请求透传给官方接口 https://api.tbox.cn/api/llm
 
 cloudflare workers 部署：
 
@@ -18,17 +18,17 @@ export default {
       return new Response("获取密钥前往 https://ling.tbox.cn/open", { status: 200 });
     }
     if (url.pathname === "/models" || url.pathname === "/v1/models") {
-      return Response.json({
-        data: [
-          { id: "Ling-1T", object: "model" },
-          { id: "Ling-2.5-1T", object: "model" },
-          { id: "Ling-2.6-flash", object: "model" },
-          { id: "Ring-1T", object: "model" },
-          { id: "Ring-2.5-1T", object: "model" },
-          { id: "Ring-2.5-flash", object: "model" },
-        ],
-        object: "list",
-      });
+      try {
+        const res = await fetch("https://lingstudio.tbox.cn/meta/model/list", {
+          headers: { referer: "https://ling.tbox.cn/" },
+        });
+        if (!res.ok) return Response.json({ data: [], object: "list" });
+        const json = await res.json();
+        const data = (json.data || []).filter((m) => m.status === "ACTIVE").map((m) => ({ id: m.code, object: "model" }));
+        return Response.json({ data, object: "list" });
+      } catch {
+        return Response.json({ data: [], object: "list" });
+      }
     }
     return fetch(`https://api.tbox.cn/api/llm${url.pathname}${url.search}`, req);
   },
