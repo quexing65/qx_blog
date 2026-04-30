@@ -49,3 +49,23 @@ git push -u origin main
 ```
 
 今后的 `git push` 和 `git pull` 就不用再写远程和分支名。
+
+6. 撤回上一条 git 提交
+
+- 软撤回（撤销提交但保留本地文件改动）
+
+```bash
+git reset --soft HEAD^1
+```
+
+- 硬撤回（撤销提交并删除本地文件改动）
+
+```bash
+git reset --hard HEAD^1
+```
+
+如果已经提交到了远程，需要强制推送（危险）：
+
+```bash
+git push -f origin main
+```

@@ -14,6 +14,7 @@
 
 - dev
   - [git 下载与配置](note/dev/git_下载与配置.md) 2026-04-30
+  - [常用 git 命令](note/dev/常用_git_命令.md) 2026-04-30
   - [霍格沃茨魔法学校](note/dev/霍格沃茨魔法学校.md) 2026-04-30
   - [霍格沃茨魔法学校（修订记录）](note/dev/霍格沃茨魔法学校（修订记录）.md) 2026-04-30
   - [Cherry Studio 美化](note/dev/Cherry_Studio_美化.md) 2026-04-27
@@ -24,7 +25,6 @@
   - [Windows 设置命令别名（alias）](note/dev/Windows_设置命令别名（alias）.md) 2026-04-25
   - [修复 Windows 数字显示成符号的异常](note/dev/修复_Windows_数字显示成符号的异常.md) 2026-04-25
   - [国内服务器安装 uv](note/dev/国内服务器安装_uv.md) 2026-04-25
-  - [常用 git 命令](note/dev/常用_git_命令.md) 2026-04-25
   - [批量删除 kimi 网页对话](note/dev/批量删除_kimi_网页对话.md) 2026-04-25
   - [智谱 coding plan 接入 NewAPI](note/dev/智谱_coding_plan_接入_NewAPI.md) 2026-04-25
   - [让远程服务器走本地电脑的代理实现科学上网](note/dev/让远程服务器走本地电脑的代理实现科学上网.md) 2026-04-25
