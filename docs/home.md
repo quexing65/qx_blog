@@ -4,15 +4,8 @@
 
 ## 文章列表
 
-- API 代理
-  - [五合一聚合](note/API_代理/五合一聚合.md) 2026-04-30
-  - [百灵大模型 API 代理](note/API_代理/百灵大模型_API_代理.md) 2026-04-30
-  - [美团 LongCat API代理](note/API_代理/美团_LongCat_API代理.md) 2026-04-30
-  - [kilo free API 代理](note/API_代理/kilo_free_API_代理.md) 2026-04-27
-  - [Poe 大模型 API 代理](note/API_代理/Poe_大模型_API_代理.md) 2026-04-27
-  - [清程极智 AIPing API 代理](note/API_代理/清程极智_AIPing_API_代理.md) 2026-04-27
-
 - dev
+  - [yt-dlp 下载B站视频](note/dev/yt-dlp_下载B站视频.md) 2026-05-01
   - [git 下载与配置](note/dev/git_下载与配置.md) 2026-04-30
   - [常用 git 命令](note/dev/常用_git_命令.md) 2026-04-30
   - [霍格沃茨魔法学校](note/dev/霍格沃茨魔法学校.md) 2026-04-30
@@ -29,6 +22,14 @@
   - [智谱 coding plan 接入 NewAPI](note/dev/智谱_coding_plan_接入_NewAPI.md) 2026-04-25
   - [让远程服务器走本地电脑的代理实现科学上网](note/dev/让远程服务器走本地电脑的代理实现科学上网.md) 2026-04-25
   - [豆包网页开启黑暗主题](note/dev/豆包网页开启黑暗主题.md) 2026-04-25
+
+- API 代理
+  - [五合一聚合](note/API_代理/五合一聚合.md) 2026-04-30
+  - [百灵大模型 API 代理](note/API_代理/百灵大模型_API_代理.md) 2026-04-30
+  - [美团 LongCat API代理](note/API_代理/美团_LongCat_API代理.md) 2026-04-30
+  - [kilo free API 代理](note/API_代理/kilo_free_API_代理.md) 2026-04-27
+  - [Poe 大模型 API 代理](note/API_代理/Poe_大模型_API_代理.md) 2026-04-27
+  - [清程极智 AIPing API 代理](note/API_代理/清程极智_AIPing_API_代理.md) 2026-04-27
 
 - 测试
   - [我的第一篇笔记](note/测试/我的第一篇笔记.md) 2026-04-25
