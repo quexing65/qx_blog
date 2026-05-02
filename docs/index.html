@@ -19,20 +19,22 @@
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css" />
     <!-- 侧边栏折叠样式 - folder style -->
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar-folder.min.css" />
+    <!-- 霞鹜文楷字体 -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" />
+    <!-- Maple Mono CN 字体 -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@mogeko/maple-mono-cn/dist/font/result.min.css" />
     <style>
-      body {
-        font-family: "Maple Mono", "PingFang SC", "Microsoft YaHei", sans-serif;
+      :root {
+        --font-code: "Maple Mono CN", monospace;
       }
 
-      /* Maple Mono 字体 */
-      @font-face {
-        font-family: "Maple Mono";
-        font-style: normal;
-        font-display: swap;
-        font-weight: 400;
-        src:
-          url(https://cdn.jsdelivr.net/fontsource/fonts/maple-mono@latest/latin-400-normal.woff2) format("woff2"),
-          url(https://cdn.jsdelivr.net/fontsource/fonts/maple-mono@latest/latin-400-normal.woff) format("woff");
+      body {
+        font-family: "LXGW WenKai", "PingFang SC", "Microsoft YaHei", sans-serif;
+      }
+
+      code,
+      pre {
+        font-family: var(--font-code);
       }
 
       /* Shiki 代码块样式 */
@@ -40,7 +42,7 @@
         border-radius: 8px;
         padding: 16px;
         overflow-x: auto;
-        font-family: "Maple Mono", "Fira Code", "Consolas", "Monaco", "Andale Mono", "Ubuntu Mono", monospace;
+        font-family: var(--font-code);
         font-size: 14px;
         line-height: 1.6;
       }
