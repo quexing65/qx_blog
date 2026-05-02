@@ -1,3 +1,7 @@
+- 测试
+  - [我的第一篇笔记](note/测试/我的第一篇笔记.md)
+  - [测试教程](note/测试/测试教程.md)
+
 - dev
   - [yt-dlp 下载B站视频](note/dev/yt-dlp_下载B站视频.md)
   - [git 下载与配置](note/dev/git_下载与配置.md)
@@ -24,7 +28,3 @@
   - [kilo free API 代理](note/API_代理/kilo_free_API_代理.md)
   - [Poe 大模型 API 代理](note/API_代理/Poe_大模型_API_代理.md)
   - [清程极智 AIPing API 代理](note/API_代理/清程极智_AIPing_API_代理.md)
-
-- 测试
-  - [我的第一篇笔记](note/测试/我的第一篇笔记.md)
-  - [测试教程](note/测试/测试教程.md)

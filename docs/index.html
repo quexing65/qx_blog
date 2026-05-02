@@ -154,6 +154,28 @@
     <!-- KaTeX -->
     <script src="//cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/marked@4"></script>
+    <!-- 兼容性补丁：marked@4 的 table token 无 cells 属性，转换为旧版格式供搜索插件使用 -->
+    <script>
+      (function () {
+        var _lexer = window.marked.lexer.bind(window.marked);
+        window.marked.lexer = function (src, options) {
+          var tokens = _lexer(src, options);
+          tokens.forEach(function (t) {
+            if (t.type === "table" && !t.cells && t.header) {
+              t.header = t.header.map(function (h) {
+                return h.text || "";
+              });
+              t.cells = (t.rows || []).map(function (row) {
+                return row.map(function (c) {
+                  return c.text || "";
+                });
+              });
+            }
+          });
+          return tokens;
+        };
+      })();
+    </script>
     <script src="//cdn.jsdelivr.net/npm/docsify-katex@latest/dist/docsify-katex.js"></script>
     <!-- 代码复制插件 -->
     <script src="//cdn.jsdelivr.net/npm/docsify-copy-code"></script>
