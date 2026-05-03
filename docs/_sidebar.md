@@ -1,13 +1,9 @@
-- 测试
-  - [我的第一篇笔记](note/测试/我的第一篇笔记.md)
-  - [测试教程](note/测试/测试教程.md)
-
 - dev
+  - [霍格沃茨魔法学校](note/dev/霍格沃茨魔法学校.md)
+  - [霍格沃茨魔法学校（修订记录）](note/dev/霍格沃茨魔法学校（修订记录）.md)
   - [yt-dlp 下载B站视频](note/dev/yt-dlp_下载B站视频.md)
   - [git 下载与配置](note/dev/git_下载与配置.md)
   - [常用 git 命令](note/dev/常用_git_命令.md)
-  - [霍格沃茨魔法学校](note/dev/霍格沃茨魔法学校.md)
-  - [霍格沃茨魔法学校（修订记录）](note/dev/霍格沃茨魔法学校（修订记录）.md)
   - [Cherry Studio 美化](note/dev/Cherry_Studio_美化.md)
   - [Docker 基础（Linux）](note/dev/Docker_基础（Linux）.md)
   - [TG 获取 Channel ID 与 TG BOT TOKEN](note/dev/TG_获取_Channel_ID_与_TG_BOT_TOKEN.md)
@@ -20,6 +16,10 @@
   - [智谱 coding plan 接入 NewAPI](note/dev/智谱_coding_plan_接入_NewAPI.md)
   - [让远程服务器走本地电脑的代理实现科学上网](note/dev/让远程服务器走本地电脑的代理实现科学上网.md)
   - [豆包网页开启黑暗主题](note/dev/豆包网页开启黑暗主题.md)
+
+- 测试
+  - [我的第一篇笔记](note/测试/我的第一篇笔记.md)
+  - [测试教程](note/测试/测试教程.md)
 
 - API 代理
   - [五合一聚合](note/API_代理/五合一聚合.md)
