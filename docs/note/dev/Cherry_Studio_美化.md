@@ -4,20 +4,20 @@
 
 字体选用的 **霞鹜文楷屏幕阅读版等宽** 与 **Maple Mono**，先看看效果:
 
-![cherry-css-light](../../assets/cherry-css-light.png)
-![cherry-css-dark](../../assets/cherry-css-dark.png)
+![cherry-css-light](../../assets/cherry-css-light.png ":size=800")
+![cherry-css-dark](../../assets/cherry-css-dark.png ":size=800")
 
 ## 二、下载字体
 
 - Maple Mono：https://font.subf.dev/zh-cn/download （下载文件 .zip，解压后将每个字体文件 .ttf 复制到系统字体目录 `C:\Windows\Fonts`）
 - 霞鹜文楷屏幕阅读版：https://github.com/lxgw/LxgwWenKai-Screen/releases （这选一个就行，我选的 LXGWWenKaiMonoScreen.ttf）
 
-![](../../assets/Windows_安装字体.png)
+![](../../assets/Windows_安装字体.png ":size=800")
 
 ## 三、Cherry Studio 美化
 
 Cherry Studio 显示设置里选择字体，如果没有显示字体，就重启 Cherry Studio/电脑。
-![](../../assets/cherry_选择字体.png)
+![](../../assets/cherry_选择字体.png ":size=800")
 
 最下面的`自定义 CSS`里粘贴以下 CSS 片段：
 

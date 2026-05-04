@@ -53,4 +53,4 @@ API 用途：[Cherry Studio/酒馆/rikkahub/kelivo/...]（必填）
 
 备注账号 (推荐QQ) 领取其他福利
 
-![](../../assets/appreciate_me.png)
+![](../../assets/appreciate_me.png ":size=500")

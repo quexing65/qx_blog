@@ -2,7 +2,9 @@
 
 1. 下载 yt-dlp.exe：https://github.com/yt-dlp/yt-dlp/releases
 2. 下载 ffmpeg：https://www.gyan.dev/ffmpeg/builds/
-   ![](../../assets/ffmpeg_download.png)
+
+![](../../assets/ffmpeg_download.png ":size=800")
+
 3. 解压 ffmpeg 到任意位置，将 bin 目录 放到系统环境变量的 PATH 中，类似于：`D:\ffmpeg-8.0.1-essentials_build\bin` 这样一条信息添加到环境变量
 4. 下载 B站视频，命令为：
    ```bash
