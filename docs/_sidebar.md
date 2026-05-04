@@ -1,4 +1,5 @@
 - dev
+  - [Trae 项目规则](note/dev/Trae_项目规则.md)
   - [霍格沃茨魔法学校](note/dev/霍格沃茨魔法学校.md)
   - [霍格沃茨魔法学校（修订记录）](note/dev/霍格沃茨魔法学校（修订记录）.md)
   - [yt-dlp 下载B站视频](note/dev/yt-dlp_下载B站视频.md)
