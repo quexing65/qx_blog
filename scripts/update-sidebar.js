@@ -45,7 +45,15 @@ function scanDirectory(dir, basePath = "") {
     }
   }
 
-  result.sort((a, b) => b.modifyTime.localeCompare(a.modifyTime));
+  result.sort((a, b) => {
+    if (a.type === "folder" && b.type === "folder") {
+      return a.name.localeCompare(b.name);
+    }
+    if (a.type === "file" && b.type === "file") {
+      return b.modifyTime.localeCompare(a.modifyTime);
+    }
+    return a.type === "folder" ? -1 : 1;
+  });
 
   return result;
 }

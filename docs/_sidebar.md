@@ -1,3 +1,21 @@
+- 测试
+  - [我的第一篇笔记](note/测试/我的第一篇笔记.md)
+  - [测试教程](note/测试/测试教程.md)
+
+- 大窝随笔
+  - [【新人必读】百万的大窝群规](note/大窝随笔/【新人必读】百万的大窝群规.md)
+  - [百万的 API KEY](note/大窝随笔/百万的_API_KEY.md)
+  - [霍格沃茨魔法学校](note/大窝随笔/霍格沃茨魔法学校.md)
+  - [霍格沃茨魔法学校（修订记录）](note/大窝随笔/霍格沃茨魔法学校（修订记录）.md)
+
+- API 代理
+  - [五合一聚合](note/API_代理/五合一聚合.md)
+  - [百灵大模型 API 代理](note/API_代理/百灵大模型_API_代理.md)
+  - [美团 LongCat API代理](note/API_代理/美团_LongCat_API代理.md)
+  - [kilo free API 代理](note/API_代理/kilo_free_API_代理.md)
+  - [Poe 大模型 API 代理](note/API_代理/Poe_大模型_API_代理.md)
+  - [清程极智 AIPing API 代理](note/API_代理/清程极智_AIPing_API_代理.md)
+
 - dev
   - [Trae 项目规则](note/dev/Trae_项目规则.md)
   - [yt-dlp 下载B站视频](note/dev/yt-dlp_下载B站视频.md)
@@ -15,21 +33,3 @@
   - [智谱 coding plan 接入 NewAPI](note/dev/智谱_coding_plan_接入_NewAPI.md)
   - [让远程服务器走本地电脑的代理实现科学上网](note/dev/让远程服务器走本地电脑的代理实现科学上网.md)
   - [豆包网页开启黑暗主题](note/dev/豆包网页开启黑暗主题.md)
-
-- 大窝随笔
-  - [【新人必读】百万的大窝群规](note/大窝随笔/【新人必读】百万的大窝群规.md)
-  - [百万的 API KEY](note/大窝随笔/百万的 API KEY.md)
-  - [霍格沃茨魔法学校](note/大窝随笔/霍格沃茨魔法学校.md)
-  - [霍格沃茨魔法学校（修订记录）](note/大窝随笔/霍格沃茨魔法学校（修订记录）.md)
-
-- 测试
-  - [我的第一篇笔记](note/测试/我的第一篇笔记.md)
-  - [测试教程](note/测试/测试教程.md)
-
-- API 代理
-  - [五合一聚合](note/API_代理/五合一聚合.md)
-  - [百灵大模型 API 代理](note/API_代理/百灵大模型_API_代理.md)
-  - [美团 LongCat API代理](note/API_代理/美团_LongCat_API代理.md)
-  - [kilo free API 代理](note/API_代理/kilo_free_API_代理.md)
-  - [Poe 大模型 API 代理](note/API_代理/Poe_大模型_API_代理.md)
-  - [清程极智 AIPing API 代理](note/API_代理/清程极智_AIPing_API_代理.md)
