@@ -11,8 +11,8 @@
 - 大窝随笔
   - [【新人必读】百万的大窝群规](note/大窝随笔/【新人必读】百万的大窝群规.md) 2026-05-04
   - [百万的 API KEY](note/大窝随笔/百万的_API_KEY.md) 2026-05-04
+  - [霍格沃茨魔法学校(修订记录)](note/大窝随笔/霍格沃茨魔法学校(修订记录).md) 2026-05-04
   - [霍格沃茨魔法学校](note/大窝随笔/霍格沃茨魔法学校.md) 2026-05-04
-  - [霍格沃茨魔法学校（修订记录）](note/大窝随笔/霍格沃茨魔法学校（修订记录）.md) 2026-05-04
 
 - API 代理
   - [五合一聚合](note/API_代理/五合一聚合.md) 2026-04-30
@@ -28,11 +28,11 @@
   - [git 下载与配置](note/dev/git_下载与配置.md) 2026-04-30
   - [常用 git 命令](note/dev/常用_git_命令.md) 2026-04-30
   - [Cherry Studio 美化](note/dev/Cherry_Studio_美化.md) 2026-04-27
-  - [Docker 基础（Linux）](note/dev/Docker_基础（Linux）.md) 2026-04-25
+  - [Docker 基础(Linux)](note/dev/Docker_基础(Linux).md) 2026-04-25
   - [TG 获取 Channel ID 与 TG BOT TOKEN](note/dev/TG_获取_Channel_ID_与_TG_BOT_TOKEN.md) 2026-04-25
   - [VSCode文件空包折叠展开](note/dev/VSCode文件空包折叠展开.md) 2026-04-25
   - [Windows 上禁用 CapsLock 键](note/dev/Windows_上禁用_CapsLock_键.md) 2026-04-25
-  - [Windows 设置命令别名（alias）](note/dev/Windows_设置命令别名（alias）.md) 2026-04-25
+  - [Windows 设置命令别名(alias)](note/dev/Windows_设置命令别名(alias).md) 2026-04-25
   - [修复 Windows 数字显示成符号的异常](note/dev/修复_Windows_数字显示成符号的异常.md) 2026-04-25
   - [国内服务器安装 uv](note/dev/国内服务器安装_uv.md) 2026-04-25
   - [批量删除 kimi 网页对话](note/dev/批量删除_kimi_网页对话.md) 2026-04-25
