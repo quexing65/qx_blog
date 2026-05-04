@@ -37,20 +37,6 @@
         font-family: var(--font-code);
       }
 
-      /* Shiki 代码块样式 */
-      .shiki {
-        border-radius: 8px;
-        padding: 16px;
-        overflow-x: auto;
-        font-family: var(--font-code);
-        font-size: 14px;
-        line-height: 1.6;
-      }
-      .shiki code {
-        font-family: inherit;
-        background: none;
-      }
-
       .update-time {
         /* 文字颜色 */
         color: gray;
@@ -65,11 +51,70 @@
         /* 顶部边框 - 浅灰色分割线 */
         border-top: 1px solid #eee;
       }
+
+      /* Shiki 代码块样式 */
+      pre.shiki {
+        position: relative;
+        border-radius: 8px;
+        padding: 16px;
+        overflow-x: auto;
+        font-family: var(--font-code);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      pre.shiki code {
+        font-family: inherit;
+        background: none;
+      }
+
+      pre.shiki .copy-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        padding: 2px 8px;
+        border: none;
+        border-radius: 4px;
+        background: rgba(128, 128, 128, 0.3);
+        color: #999;
+        font-size: 12px;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+
+      pre.shiki:hover .copy-btn {
+        opacity: 1;
+      }
     </style>
   </head>
   <body>
     <div id="app"></div>
     <script>
+      // Shiki 高亮后添加复制按钮的函数
+      function addCopyButtonsToShiki() {
+        document.querySelectorAll("pre.shiki").forEach((pre) => {
+          if (pre.querySelector(".copy-btn")) return;
+
+          const btn = document.createElement("button");
+          btn.className = "copy-btn";
+          btn.textContent = "复制";
+
+          btn.addEventListener("click", async () => {
+            const code = pre.querySelector("code")?.textContent || "";
+            try {
+              await navigator.clipboard.writeText(code);
+              btn.textContent = "已复制";
+              setTimeout(() => (btn.textContent = "复制"), 1000);
+            } catch {
+              btn.textContent = "失败";
+              setTimeout(() => (btn.textContent = "复制"), 1000);
+            }
+          });
+
+          pre.appendChild(btn);
+        });
+      }
+
       window.$docsify = {
         name: "百万的博客",
         loadSidebar: true,
@@ -78,13 +123,6 @@
         },
         topMargin: 30,
         homepage: "home.md",
-
-        // 代码复制
-        copyCode: {
-          buttonText: "复制",
-          errorText: "失败",
-          successText: "已复制",
-        },
 
         // 分页导航
         pagination: {
@@ -138,6 +176,9 @@
 
                 pre.outerHTML = await window.shikiHighlight(block.textContent, lang);
               }
+
+              // Shiki 高亮后重新添加复制按钮
+              addCopyButtonsToShiki();
             });
           },
         ],
@@ -179,8 +220,6 @@
       })();
     </script>
     <script src="//cdn.jsdelivr.net/npm/docsify-katex@latest/dist/docsify-katex.js"></script>
-    <!-- 代码复制插件 -->
-    <script src="//cdn.jsdelivr.net/npm/docsify-copy-code"></script>
     <!-- 分页导航插件 -->
     <script src="//cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
     <!-- 图片缩放插件 -->
