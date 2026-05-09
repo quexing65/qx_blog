@@ -9,7 +9,8 @@
   - [霍格沃茨魔法学校(修订记录)](note/大窝随笔/霍格沃茨魔法学校(修订记录).md)
 
 - API 代理
-  - [五合一聚合](note/API_代理/五合一聚合.md)
+  - [OpenRouter API 代理](note/API_代理/OpenRouter_API_代理.md)
+  - [六合一聚合](note/API_代理/六合一聚合.md)
   - [百灵大模型 API 代理](note/API_代理/百灵大模型_API_代理.md)
   - [美团 LongCat API代理](note/API_代理/美团_LongCat_API代理.md)
   - [kilo free API 代理](note/API_代理/kilo_free_API_代理.md)
