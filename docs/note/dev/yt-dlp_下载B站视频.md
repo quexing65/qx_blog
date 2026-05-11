@@ -14,7 +14,7 @@
 使用以下命令下载 B站 视频：
 
 ```bash
-.\yt-dlp.exe -f "bestvideo+bestaudio/best" --merge-output-format mp4 -o "%(title)s.%(ext)s" https://www.bilibili.com/video/BV1AoUVBaEiv/
+.\yt-dlp.exe -f "bestvideo+bestaudio/best" --merge-output-format mp4 -o "%(title)s.%(ext)s" https://www.bilibili.com/video/BV1khdYBiEXW/
 ```
 
 **参数说明：**
@@ -37,12 +37,12 @@
 
 1. 安装 Chrome 插件：[Get cookies.txt LOCALLY](https://chromewebstore.google.com/detail/get-cookiestxt-locally/cclelndahbckbenkjhflpdbgdldlbecc)
 2. 打开目标网站（如 YouTube），点击插件图标
-3. 点击 `Export` 导出 Cookie 文件，重命名为 `cookies.txt`
+3. 点击 `Export` 导出 Cookie 文件，重命名为 `bilibili.txt`
 
 ### 使用 Cookie 下载
 
 ```bash
-.\yt-dlp.exe -f "bestvideo+bestaudio/best" --merge-output-format mp4 -o "%(title)s.%(ext)s" --cookies cookies.txt https://www.bilibili.com/video/BV1AoUVBaEiv/
+.\yt-dlp.exe -f "bestvideo+bestaudio/best" --merge-output-format mp4 -o "%(title)s.%(ext)s" --cookies bilibili.txt https://www.bilibili.com/video/BV1khdYBiEXW/
 ```
 
-**注意：** `cookies.txt` 需与 `yt-dlp.exe` 放在同一目录下
+**注意：** `bilibili.txt` 需与 `yt-dlp.exe` 放在同一目录下
