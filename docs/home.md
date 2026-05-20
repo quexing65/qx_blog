@@ -25,9 +25,9 @@
   - [清程极智 AIPing API 代理](note/API_代理/清程极智_AIPing_API_代理.md) 2026-04-27
 
 - dev
+  - [Trae 项目规则](note/dev/Trae_项目规则.md) 2026-05-20
   - [yt-dlp 下载B站视频](note/dev/yt-dlp_下载B站视频.md) 2026-05-11
   - [Cherry Studio 美化](note/dev/Cherry_Studio_美化.md) 2026-05-04
-  - [Trae 项目规则](note/dev/Trae_项目规则.md) 2026-05-04
   - [VSCode文件空包折叠展开](note/dev/VSCode文件空包折叠展开.md) 2026-05-04
   - [修复 Windows 数字显示成符号的异常](note/dev/修复_Windows_数字显示成符号的异常.md) 2026-05-04
   - [让远程服务器走本地电脑的代理实现科学上网](note/dev/让远程服务器走本地电脑的代理实现科学上网.md) 2026-05-04
