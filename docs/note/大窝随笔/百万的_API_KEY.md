@@ -41,15 +41,12 @@ API 用途：[Cherry Studio/酒馆/rikkahub/kelivo/...]（必填）
 
 ## 四、推荐客户端 ([QQ 群](https://qm.qq.com/q/2nPuWaigM4) 有安装包)
 
-1. Windows/Mac：Cherry Studio
-   - 官网地址：https://www.cherry-ai.com/download
-   - GitHub 地址：https://github.com/CherryHQ/cherry-studio/releases
-2. 安卓：rikkahub
-   - 官网地址：https://rikka-ai.com
-   - GitHub 地址：https://github.com/rikkahub/rikkahub/releases
-3. iOS：Kelivo
-   - 官网地址：https://kelivo.psycheas.top/zh/
-   - GitHub 地址：https://github.com/Chevey339/kelivo
+| 平台        | 客户端        | 官网地址                                            | GitHub 地址                                                                  |
+| ----------- | ------------- | --------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Windows/Mac | Cherry Studio | [Cherry Studio](https://www.cherry-ai.com/download) | [CherryHQ/cherry-studio](https://github.com/CherryHQ/cherry-studio/releases) |
+| 安卓        | rikkahub      | [rikkahub](https://rikka-ai.com)                    | [rikkahub/rikkahub](https://github.com/rikkahub/rikkahub/releases)           |
+| iOS         | Kelivo        | [Kelivo](https://kelivo.psycheas.top/zh/)           | [Chevey339/kelivo](https://github.com/Chevey339/kelivo/releases)             |
+| 安卓        | Aether        | [Aether](https://aether.baimoqilin.com/)            | [Zhou-Shilin/Aether](https://github.com/Zhou-Shilin/Aether/releases)         |
 
 ## 五、微信打赏
 
