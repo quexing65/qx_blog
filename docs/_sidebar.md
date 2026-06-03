@@ -8,6 +8,10 @@
   - [霍格沃茨魔法学校(修订记录)](note/大窝随笔/霍格沃茨魔法学校(修订记录).md)
   - [霍格沃茨魔法学校](note/大窝随笔/霍格沃茨魔法学校.md)
 
+- 基础笔记
+  - Numpy
+    - [关于Numpy](note/基础笔记/Numpy/关于Numpy.md)
+
 - API 代理
   - [kilo free API 代理](note/API_代理/kilo_free_API_代理.md)
   - [OpenRouter API 代理](note/API_代理/OpenRouter_API_代理.md)
