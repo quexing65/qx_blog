@@ -8,5 +8,5 @@
 
 ## 联系我
 
-- 邮箱：yesbaiwan@gmail.com
-- GitHub：[Yesbaiwan](https://github.com/Yesbaiwan)
+- 邮箱：quexing65@gmail.com
+- GitHub：[quexing65](https://github.com/quexing65)
