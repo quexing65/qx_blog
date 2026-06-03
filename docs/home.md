@@ -15,7 +15,7 @@
   - [【新人必读】百万的大窝群规](note/大窝随笔/【新人必读】百万的大窝群规.md) 2026-05-04
 
 - API 代理
-  - [七合一聚合](note/API_代理/七合一聚合.md) 2026-06-03
+  - [五合一聚合](note/API_代理/五合一聚合.md) 2026-06-03
   - [七牛云 API 代理](note/API_代理/七牛云_API_代理.md) 2026-05-15
   - [OpenRouter API 代理](note/API_代理/OpenRouter_API_代理.md) 2026-05-09
   - [kilo free API 代理](note/API_代理/kilo_free_API_代理.md) 2026-04-27
