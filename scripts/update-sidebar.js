@@ -7,6 +7,8 @@ const SIDEBAR_FILE = path.join(DOCS_DIR, "_sidebar.md");
 const HOME_FILE = path.join(DOCS_DIR, "home.md");
 const TEMPLATE_FILE = path.join(__dirname, "template.md");
 
+const IGNORE_DIRS = new Set(["archive"]);
+
 function formatDate(date) {
   return date.toISOString().split("T")[0];
 }
@@ -23,6 +25,7 @@ function scanDirectory(dir, basePath = "") {
     const relativePath = path.join(basePath, entry.name);
 
     if (entry.isDirectory()) {
+      if (IGNORE_DIRS.has(entry.name)) continue;
       const children = scanDirectory(path.join(dir, entry.name), relativePath);
       if (children.length > 0) {
         const folderTime = children.reduce((max, c) => (c.modifyTime > max ? c.modifyTime : max), "0000-00-00");
