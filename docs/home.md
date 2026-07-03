@@ -6,12 +6,12 @@
 ## 📌 最新文章
 
 - 墙外的世界
-  - [宝可梦每月优惠口令](note/墙外的世界/宝可梦每月优惠口令.md) 2026-07-01
-  - [魔法推荐](note/墙外的世界/魔法推荐.md) 2026-06-17
+<div class="article-item"><span>[宝可梦每月优惠口令](note/墙外的世界/宝可梦每月优惠口令.md)</span><span class="article-date">2026-07-01</span></div>
+<div class="article-item"><span>[魔法推荐](note/墙外的世界/魔法推荐.md)</span><span class="article-date">2026-06-17</span></div>
 
 - 一些励志语句
   - 蛊真人
-    - [别回头](note/一些励志语句/蛊真人/别回头.md) 2026-07-03
+<div class="article-item"><span>[别回头](note/一些励志语句/蛊真人/别回头.md)</span><span class="article-date">2026-07-03</span></div>
 
 <div class="contact-info">
   📧 quexing65@gmail.com · <a href="https://github.com/quexing65">GitHub</a>

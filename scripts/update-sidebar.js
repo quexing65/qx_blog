@@ -75,11 +75,10 @@ function renderList(items, level = 0, showTime = false) {
         content += "\n";
       }
     } else {
-      if (showTime && level === 0) {
+      if (showTime) {
         content += `<div class="article-item"><span>[${item.title}](${item.path})</span><span class="article-date">${item.modifyTime}</span></div>\n`;
       } else {
-        const timeStr = showTime && item.modifyTime ? ` ${item.modifyTime}` : "";
-        content += `${indent}- [${item.title}](${item.path})${timeStr}\n`;
+        content += `${indent}- [${item.title}](${item.path})\n`;
       }
     }
   }
