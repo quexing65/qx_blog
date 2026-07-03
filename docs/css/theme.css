@@ -115,6 +115,25 @@ code, pre {
   transition: color var(--transition-duration);
 }
 
+/* --- 侧边栏文件/文件夹图标 --- */
+.sidebar-nav li > a::before,
+.sidebar-nav li > p::before {
+  transition: color var(--transition-duration);
+}
+
+[data-theme="dark"] .sidebar-nav li > a::before,
+[data-theme="dark"] .sidebar-nav li > p::before {
+  color: #a1a1aa;
+}
+
+[data-theme="dark"] .sidebar-nav li.folder > p::before,
+[data-theme="dark"] .sidebar-nav li.folder > a::before {
+  color: #e8a0bf;
+}
+  font-weight: bold;
+  transition: color var(--transition-duration);
+}
+
 /* --- Hero 区域 --- */
 .hero-section {
   text-align: center;
