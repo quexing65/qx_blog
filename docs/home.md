@@ -5,13 +5,9 @@
 
 ## 📌 最新文章
 
-<div class="article-folder">墙外的世界</div>
+<div class="article-item"><span><a href="note/一些励志语句/蛊真人/别回头.md">别回头</a></span><span class="article-date">2026-07-03</span></div>
 <div class="article-item"><span><a href="note/墙外的世界/宝可梦每月优惠口令.md">宝可梦每月优惠口令</a></span><span class="article-date">2026-07-01</span></div>
 <div class="article-item"><span><a href="note/墙外的世界/魔法推荐.md">魔法推荐</a></span><span class="article-date">2026-06-17</span></div>
-
-<div class="article-folder">一些励志语句</div>
-<div class="article-folder">蛊真人</div>
-<div class="article-item"><span><a href="note/一些励志语句/蛊真人/别回头.md">别回头</a></span><span class="article-date">2026-07-03</span></div>
 
 <div class="contact-info">
   📧 quexing65@gmail.com · <a href="https://github.com/quexing65">GitHub</a>
