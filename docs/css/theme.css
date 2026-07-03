@@ -123,12 +123,12 @@ code, pre {
 
 [data-theme="dark"] .sidebar-nav li > a::before,
 [data-theme="dark"] .sidebar-nav li > p::before {
-  color: #252526;
+  color: #8A8A8A;
 }
 
 [data-theme="dark"] .sidebar-nav li.folder > p::before,
 [data-theme="dark"] .sidebar-nav li.folder > a::before {
-  color: #252526;
+  color: #8A8A8A;
 }
   font-weight: bold;
   transition: color var(--transition-duration);
