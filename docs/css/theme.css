@@ -390,7 +390,13 @@ pre.shiki:hover .copy-btn {
 }
 
 [data-theme="dark"] .search input::placeholder {
-  color: #a1a1aa;
+  color: #a1a1aa !important;
+  opacity: 1 !important;
+}
+
+[data-theme="dark"] .search input::-webkit-input-placeholder {
+  color: #a1a1aa !important;
+  opacity: 1 !important;
 }
 
 .search .clear-button {
