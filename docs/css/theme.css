@@ -130,8 +130,20 @@ code, pre {
 [data-theme="dark"] .sidebar-nav li.folder > a::before {
   color: #2D2D2F;
 }
-  font-weight: bold;
-  transition: color var(--transition-duration);
+
+/* 覆盖插件的 SVG 图标，用 CSS content 代替 */
+.sidebar-nav ul:not(.app-sub-sidebar) > li.file::before {
+  background: none !important;
+  content: "📄";
+  font-size: 12px;
+  line-height: 14px;
+}
+
+.sidebar-nav ul:not(.app-sub-sidebar) > li.folder::before {
+  background: none !important;
+  content: "📁";
+  font-size: 12px;
+  line-height: 14px;
 }
 
 /* --- Hero 区域 --- */
