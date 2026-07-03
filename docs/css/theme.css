@@ -47,7 +47,7 @@
   --base-background-color: #2D2D2F;
   --base-text-color: #d4d4d8;
 
-  --sidebar-background: #252526;
+  --sidebar-background: #353537;
   --sidebar-border-color: rgba(255, 255, 255, 0.08);
   --sidebar-nav-link-color--active: #e8a0bf;
   --sidebar-nav-link-color: #a1a1aa;
@@ -65,7 +65,7 @@
   --table-border-color: rgba(255, 255, 255, 0.1);
   --table-header-background: #1e1e1e;
 
-  --search-input-background: #3a3a3c;
+  --search-input-background: #404042;
   --search-input-border-color: rgba(255, 255, 255, 0.15);
 
   --theme-color: #e8a0bf;
