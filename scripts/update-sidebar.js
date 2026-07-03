@@ -90,13 +90,30 @@ function renderList(items, level = 0, showTime = false) {
   return content;
 }
 
+// 收集所有文章（扁平化，按日期排序）
+function collectAllFiles(items) {
+  const files = [];
+  for (const item of items) {
+    if (item.type === "folder") {
+      files.push(...collectAllFiles(item.children));
+    } else {
+      files.push(item);
+    }
+  }
+  return files.sort((a, b) => b.modifyTime.localeCompare(a.modifyTime));
+}
+
 const structure = scanDirectory(NOTE_DIR);
 
 fs.writeFileSync(SIDEBAR_FILE, renderList(structure, 0, false));
 console.log(`已更新: ${SIDEBAR_FILE}`);
 
+// 首页用扁平化文章列表（不分文件夹，按日期排序）
 const templateContent = fs.readFileSync(TEMPLATE_FILE, "utf-8");
-const homeContent = renderList(structure, 0, true);
+const allFiles = collectAllFiles(structure);
+const homeContent = allFiles
+  .map((f) => `<div class="article-item"><span><a href="${f.path}">${f.title}</a></span><span class="article-date">${f.modifyTime}</span></div>`)
+  .join("\n");
 fs.writeFileSync(HOME_FILE, templateContent.replace("{{ARTICLE_LIST}}", homeContent.trimEnd()));
 console.log(`已更新: ${HOME_FILE}`);
 
