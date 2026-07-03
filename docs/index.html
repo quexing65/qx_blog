@@ -7,7 +7,9 @@
     <meta name="description" content="Description" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
     <link rel="icon" href="_media/favicon.ico" />
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css" />
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css" />
+    <!-- 自定义主题变量和样式 -->
+    <link rel="stylesheet" href="css/theme.css" />
     <!-- 不好看放弃使用 -->
     <!--
       Catppuccin 主题
@@ -23,79 +25,6 @@
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" />
     <!-- Maple Mono CN 字体 -->
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@mogeko/maple-mono-cn/dist/font/result.min.css" />
-    <style>
-      :root {
-        --font-code: "Maple Mono CN", monospace;
-      }
-
-      body {
-        font-family: "LXGW WenKai", "PingFang SC", "Microsoft YaHei", sans-serif;
-        color: #1a1a1a !important;
-        font-weight: 500 !important;
-      }
-
-      /* 加粗文字样式 */
-      strong,
-      b {
-        color: #B55A5A !important;
-        font-weight: 800 !important;
-      }
-
-      code,
-      pre {
-        font-family: var(--font-code);
-      }
-
-      /* 最后更新时间插件样式 */
-      .update-time {
-        /* 文字颜色 */
-        color: gray;
-        /* 字体大小 */
-        font-size: 12px;
-        /* 文字对齐方式 */
-        text-align: left;
-        /* 上边距 */
-        margin-top: 20px;
-        /* 内边距 */
-        padding: 10px;
-        /* 顶部边框 - 浅灰色分割线 */
-        border-top: 1px solid #eee;
-      }
-
-      /* Shiki 代码块样式 */
-      pre.shiki {
-        position: relative;
-        border-radius: 8px;
-        padding: 16px;
-        overflow-x: auto;
-        font-family: var(--font-code);
-        font-size: 14px;
-        line-height: 1.6;
-      }
-
-      pre.shiki code {
-        font-family: inherit;
-        background: none;
-      }
-
-      pre.shiki .copy-btn {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        padding: 2px 8px;
-        border: none;
-        border-radius: 4px;
-        background: rgba(128, 128, 128, 0.3);
-        color: #999;
-        font-size: 12px;
-        opacity: 0;
-        transition: opacity 0.2s;
-      }
-
-      pre.shiki:hover .copy-btn {
-        opacity: 1;
-      }
-    </style>
   </head>
   <body>
     <div id="app"></div>
@@ -266,11 +195,14 @@
       window.shikiHighlight = async (code, lang) => {
         lang = lang.toLowerCase();
         lang = langMap[lang] || lang || "text";
+        const currentTheme = document.documentElement.getAttribute("data-theme") === "dark"
+          ? "catppuccin-mocha"
+          : "catppuccin-latte";
         try {
-          return await codeToHtml(code, { lang, theme: "catppuccin-latte" });
+          return await codeToHtml(code, { lang, theme: currentTheme });
         } catch (e) {
           console.warn(`Shiki: Language "${lang}" not found, fallback to text`);
-          return await codeToHtml(code, { lang: "text", theme: "catppuccin-latte" });
+          return await codeToHtml(code, { lang: "text", theme: currentTheme });
         }
       };
     </script>
@@ -282,5 +214,8 @@
         ClickHeartAnimation.init();
       });
     </script>
+
+    <!-- 暗色模式切换 -->
+    <script src="js/darkmode.js"></script>
   </body>
 </html>
