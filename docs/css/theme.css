@@ -44,10 +44,10 @@
 
 /* --- 暗色模式变量 --- */
 [data-theme="dark"] {
-  --base-background-color: #1a1a2e;
+  --base-background-color: #2D2D2F;
   --base-text-color: #d4d4d8;
 
-  --sidebar-background: #16162a;
+  --sidebar-background: #252526;
   --sidebar-border-color: rgba(255, 255, 255, 0.08);
   --sidebar-nav-link-color--active: #e8a0bf;
   --sidebar-nav-link-color: #a1a1aa;
@@ -56,16 +56,16 @@
   --link-color: #e8a0bf;
   --strong-color: #e8a0bf;
 
-  --code-background: #252540;
-  --code-inline-background: #252540;
+  --code-background: #1e1e1e;
+  --code-inline-background: #1e1e1e;
 
   --blockquote-border-color: #e8a0bf;
   --blockquote-color: #a1a1aa;
 
   --table-border-color: rgba(255, 255, 255, 0.1);
-  --table-header-background: #252540;
+  --table-header-background: #1e1e1e;
 
-  --search-input-background: #252540;
+  --search-input-background: #1e1e1e;
   --search-input-border-color: rgba(255, 255, 255, 0.15);
 
   --theme-color: #e8a0bf;
@@ -247,7 +247,7 @@ code, pre {
   color: var(--theme-color);
 }
 
-[data-theme="dark"] .article-item {
+[data-theme="dark"] .markdown-section ul li {
   border-bottom-color: rgba(255, 255, 255, 0.06);
 }
 
