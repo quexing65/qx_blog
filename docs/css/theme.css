@@ -375,10 +375,14 @@ pre.shiki:hover .copy-btn {
 
 /* --- 搜索框 --- */
 .search input {
-  background: var(--search-input-background);
-  border: 1px solid var(--search-input-border-color);
-  color: var(--base-text-color);
+  background: var(--search-input-background) !important;
+  border: 1px solid var(--search-input-border-color) !important;
+  color: var(--base-text-color) !important;
   transition: background var(--transition-duration), border-color var(--transition-duration), color var(--transition-duration);
+}
+
+.search .clear-button {
+  color: var(--base-text-color);
 }
 
 /* --- 分页 --- */
