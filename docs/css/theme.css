@@ -166,13 +166,48 @@ code, pre {
   margin: 0 0 12px;
 }
 
+/* --- 文章分类标题 --- */
+.article-folder {
+  color: var(--theme-color);
+  font-weight: 600;
+  font-size: 0.95em;
+  margin-top: 12px;
+  margin-bottom: 4px;
+  padding-left: 2px;
+}
+
+.article-folder:first-child {
+  margin-top: 0;
+}
+
+/* --- 文章列表项 --- */
 .article-item {
   display: flex;
   justify-content: space-between;
-  padding: 4px 0;
+  align-items: center;
+  padding: 6px 12px;
   border-bottom: 1px solid #f5f0eb;
   font-size: 0.9em;
-  line-height: 2;
+  line-height: 1.8;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+
+.article-item:hover {
+  background: rgba(181, 90, 90, 0.04);
+}
+
+[data-theme="dark"] .article-item:hover {
+  background: rgba(232, 160, 191, 0.06);
+}
+
+.article-item a {
+  color: var(--base-text-color);
+  text-decoration: none;
+}
+
+.article-item a:hover {
+  color: var(--theme-color);
 }
 
 [data-theme="dark"] .article-item {

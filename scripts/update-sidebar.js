@@ -69,14 +69,18 @@ function renderList(items, level = 0, showTime = false) {
     const item = items[i];
 
     if (item.type === "folder") {
-      content += `${indent}- ${toDisplayName(item.name)}\n`;
+      if (showTime) {
+        content += `<div class="article-folder">${toDisplayName(item.name)}</div>\n`;
+      } else {
+        content += `${indent}- ${toDisplayName(item.name)}\n`;
+      }
       content += renderList(item.children, level + 1, showTime);
       if (level === 0 && i < items.length - 1) {
         content += "\n";
       }
     } else {
       if (showTime) {
-        content += `<div class="article-item"><span>[${item.title}](${item.path})</span><span class="article-date">${item.modifyTime}</span></div>\n`;
+        content += `<div class="article-item"><span><a href="${item.path}">${item.title}</a></span><span class="article-date">${item.modifyTime}</span></div>\n`;
       } else {
         content += `${indent}- [${item.title}](${item.path})\n`;
       }
