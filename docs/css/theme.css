@@ -181,32 +181,50 @@ code, pre {
 }
 
 /* --- 文章列表项 --- */
-.article-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 12px;
-  border-bottom: 1px solid #f5f0eb;
-  font-size: 0.9em;
-  line-height: 1.8;
-  border-radius: 4px;
-  transition: background 0.15s;
+.article-date {
+  color: #aaa;
+  font-size: 0.85em;
+  float: right;
+  margin-top: 3px;
 }
 
-.article-item:hover {
+[data-theme="dark"] .article-date {
+  color: #71717a;
+}
+
+/* 首页文章列表样式 */
+.markdown-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.markdown-section ul li {
+  padding: 8px 12px;
+  border-bottom: 1px solid #f5f0eb;
+  border-radius: 4px;
+  transition: background 0.15s;
+  line-height: 1.8;
+}
+
+[data-theme="dark"] .markdown-section ul li {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+.markdown-section ul li:hover {
   background: rgba(181, 90, 90, 0.04);
 }
 
-[data-theme="dark"] .article-item:hover {
+[data-theme="dark"] .markdown-section ul li:hover {
   background: rgba(232, 160, 191, 0.06);
 }
 
-.article-item a {
+.markdown-section ul li a {
   color: var(--base-text-color);
   text-decoration: none;
+  font-weight: 500;
 }
 
-.article-item a:hover {
+.markdown-section ul li a:hover {
   color: var(--theme-color);
 }
 

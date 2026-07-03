@@ -112,7 +112,7 @@ console.log(`已更新: ${SIDEBAR_FILE}`);
 const templateContent = fs.readFileSync(TEMPLATE_FILE, "utf-8");
 const allFiles = collectAllFiles(structure);
 const homeContent = allFiles
-  .map((f) => `<div class="article-item"><span><a href="${f.path}">${f.title}</a></span><span class="article-date">${f.modifyTime}</span></div>`)
+  .map((f) => `- [${f.title}](${f.path}) <span class="article-date">${f.modifyTime}</span>`)
   .join("\n");
 fs.writeFileSync(HOME_FILE, templateContent.replace("{{ARTICLE_LIST}}", homeContent.trimEnd()));
 console.log(`已更新: ${HOME_FILE}`);
