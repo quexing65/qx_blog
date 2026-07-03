@@ -381,6 +381,18 @@ pre.shiki:hover .copy-btn {
   transition: background var(--transition-duration), border-color var(--transition-duration), color var(--transition-duration);
 }
 
+.search input::placeholder {
+  color: var(--sidebar-nav-link-color);
+}
+
+[data-theme="dark"] .search input {
+  color: #e0e0e0 !important;
+}
+
+[data-theme="dark"] .search input::placeholder {
+  color: #a1a1aa;
+}
+
 .search .clear-button {
   color: var(--base-text-color);
 }
