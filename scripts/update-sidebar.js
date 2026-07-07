@@ -14,7 +14,7 @@ function formatDate(date) {
 }
 
 function toDisplayName(name) {
-  return name.replace(/_/g, "\\_");
+  return name.replace(/_/g, " ");
 }
 
 function scanDirectory(dir, basePath = "") {
