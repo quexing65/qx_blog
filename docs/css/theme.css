@@ -319,6 +319,24 @@ code, pre {
   background: rgba(232, 160, 191, 0.18);
 }
 
+/* --- 键盘按键样式 --- */
+kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  font-size: 0.85em;
+  font-family: var(--code-font-family);
+  color: var(--base-text-color);
+  background: var(--code-inline-background);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] kbd {
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
 /* --- 最后更新时间 --- */
 .update-time {
   color: gray;
