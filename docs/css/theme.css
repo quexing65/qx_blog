@@ -91,6 +91,20 @@ code, pre {
   font-family: var(--code-font-family);
 }
 
+/* --- 引用块样式 --- */
+blockquote {
+  color: var(--blockquote-color);
+  border-left: 4px solid var(--blockquote-border-color);
+  padding: 8px 16px;
+  margin: 16px 0;
+  background: rgba(0, 0, 0, 0.02);
+  transition: color var(--transition-duration), border-color var(--transition-duration);
+}
+
+[data-theme="dark"] blockquote {
+  background: rgba(255, 255, 255, 0.03);
+}
+
 /* --- 侧边栏 --- */
 .sidebar {
   background: var(--sidebar-background);
