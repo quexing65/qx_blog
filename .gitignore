@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Package lock
+package-lock.json
+
+# Environment variables
+.env
+
+# OS
+# macOS 的 Finder 自动生成，记录文件夹的显示属性（图标位置、窗口大小等）
+.DS_Store
+# Windows 的图片缩略图缓存，浏览过含图片的文件夹时自动生成
+Thumbs.db
+# Windows 资源管理器自动生成的文件夹个性化设置（自定义图标、查看方式等）
+# 这三类文件都是系统自己产生的，每台电脑都不一样，与项目代码无关
+Desktop.ini
+
+# Logs
+# 程序运行或出错时自动生成的日志文件（如 npm-debug.log）
+# 内容每次运行都会变，且可能包含本机路径等隐私信息，不应提交
+*.log
+
+# AI
+.claude/
+.cursor/
+.trae/
+.superpowers/
+.workbuddy/
+
+# IDE
+# JetBrains 系列 IDE（WebStorm / IntelliJ IDEA / PyCharm 等）自动生成的项目配置
+# 里面存的是本地 IDE 状态（打开的文件、断点、运行配置等），换台电脑就不同
+.idea/
