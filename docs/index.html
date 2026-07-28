@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>𝓺𝓾𝓮𝔁𝓲𝓷𝓰</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="description" content="Description" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+    <link rel="icon" href="_media/favicon.ico" />
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-themeable@0.9.0/dist/css/theme-simple.css" />
+    <!-- 自定义主题变量和样式 -->
+    <link rel="stylesheet" href="css/theme.css" />
+    <!-- 不好看放弃使用 -->
+    <!--
+      Catppuccin 主题
+      flavor: latte | frappe | macchiato | mocha
+      accent: rosewater | flamingo | pink | mauve | red | maroon | peach | yellow | green | teal | sky | sapphire | blue | lavender
+    -->
+    <!-- <link rel="stylesheet" href="https://docsify.catppuccin.com/latte/flamingo.css" /> -->
+    <!-- KaTeX 已改为按需懒加载（见 body 顶部「重型库懒加载」脚本），此处不再全局引入 -->
+    <!-- 侧边栏折叠样式 - folder style -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse@1.3.5/dist/sidebar-folder.min.css" />
+    <!-- 霞鹜文楷字体 -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" />
+    <!-- Maple Mono CN 字体 -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@mogeko/maple-mono-cn@7.9.0/dist/font/result.min.css" />
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <!-- ============================================================
+         重型库懒加载（KaTeX ≈270KB / Mermaid ≈2.7MB）
+         原则：打开页面时不下载这些大库；文章渲染过程中检测到确实
+         需要时才动态加载。检测本身是纯字符串/DOM 判断，零成本。
+         ============================================================ -->
+    <script>
+      /* ================= KaTeX 懒加载 ================= */
+
+      // katex 加载 Promise 缓存：保证全站只下载并执行一次
+      let katexPromise = null;
+
+      // 动态加载 katex 的 CSS 与 JS；重复调用直接复用缓存的 Promise
+      function loadKatex() {
+        if (!katexPromise) {
+          katexPromise = new Promise(function (resolve, reject) {
+            // CSS 插入 <link> 即可，无需等待加载完成
+            const link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = "//cdn.jsdelivr.net/npm/katex@0.18.1/dist/katex.min.css";
+            document.head.appendChild(link);
+
+            const script = document.createElement("script");
+            script.src = "//cdn.jsdelivr.net/npm/katex@0.18.1/dist/katex.min.js";
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+          });
+        }
+        return katexPromise;
+      }
+
+      // 将 markdown 原文中的公式渲染为 HTML：
+      //   $$...$$ → 块级公式（displayMode: true）
+      //   $...$   → 行内公式
+      // 先按「围栏代码块 / 行内代码」切分，代码片段原样保留，
+      // 避免把代码里的 $ 符号误判成公式。
+      function renderMath(content) {
+        return content
+          .split(/(```[\s\S]*?```|`[^`\n]*`)/g)
+          .map(function (segment, index) {
+            if (index % 2 === 1) return segment; // 代码片段，跳过不处理
+            return segment
+              .replace(/\$\$([\s\S]+?)\$\$/g, function (_, tex) {
+                return katex.renderToString(tex, { displayMode: true, throwOnError: false });
+              })
+              .replace(/\$([^$\n]+?)\$/g, function (_, tex) {
+                return katex.renderToString(tex, { displayMode: false, throwOnError: false });
+              });
+          })
+          .join("");
+      }
+
+      // docsify 插件：markdown 解析前（beforeEach）探测并渲染公式。
+      // 原先的 docsify-katex 插件在解析阶段同步依赖 window.katex，
+      // 与懒加载冲突，因此移除，渲染逻辑在这里自实现。
+      function lazyKatexPlugin(hook) {
+        hook.beforeEach(function (content, next) {
+          // 快速探测：没有公式定界符则原样放行，完全不加载 katex
+          const hasMath = /\$\$[\s\S]+?\$\$|\$[^$\n]+?\$/.test(content);
+          if (!hasMath) return next(content);
+
+          loadKatex()
+            .then(function () { next(renderMath(content)); })
+            .catch(function () { next(content); }); // 加载失败也保证正文可见
+        });
+      }
+
+      /* ================= Mermaid 懒加载 ================= */
+
+      // mermaid 模块（ESM）加载缓存
+      let mermaidPromise = null;
+
+      // 首次调用时才动态 import mermaid（≈2.7MB）
+      function loadMermaid() {
+        if (!mermaidPromise) {
+          mermaidPromise = import(
+            "https://cdn.jsdelivr.net/npm/mermaid@10.9.6/dist/mermaid.esm.min.mjs"
+          ).then(function (module) { return module.default; });
+        }
+        return mermaidPromise;
+      }
+
+      // docsify 插件：文章渲染完成后（doneEach）处理 mermaid 图。
+      // 注意：本插件必须排在 Shiki 高亮插件之前执行（见 plugins 数组），
+      // 这样 ```mermaid 代码块会先被转换为 div，不会被当成普通代码高亮。
+      // 暗色模式说明：图在首次渲染时确定主题，切换暗色不会重绘（与原实现一致）。
+      function lazyMermaidPlugin(hook) {
+        hook.doneEach(async function () {
+          // 1) 把 ```mermaid 代码块转换为 mermaid 可识别的 <div class="mermaid">
+          //    （同步执行，保证先于 Shiki 插件完成转换）
+          document.querySelectorAll("pre code.lang-mermaid").forEach(function (code) {
+            const div = document.createElement("div");
+            div.className = "mermaid";
+            div.textContent = code.textContent;
+            code.parentElement.replaceWith(div);
+          });
+
+          // 2) 没有图就直接返回，完全不加载 mermaid。
+          //    data-processed 是 mermaid 渲染成功后自动打的标记，用于跳过已渲染的图
+          const nodes = document.querySelectorAll(".mermaid:not([data-processed])");
+          if (nodes.length === 0) return;
+
+          // 3) 有图才加载并手动渲染（startOnLoad 必须关闭，时机由我们控制）
+          const mermaid = await loadMermaid();
+          mermaid.initialize({ startOnLoad: false });
+          await mermaid.run({ nodes: nodes });
+        });
+      }
+    </script>
+
+    <script>
+      // Shiki 高亮后添加复制按钮的函数
+      function addCopyButtonsToShiki() {
+        document.querySelectorAll("pre.shiki").forEach((pre) => {
+          if (pre.querySelector(".copy-btn")) return;
+
+          const btn = document.createElement("button");
+          btn.className = "copy-btn";
+          btn.textContent = "复制";
+
+          btn.addEventListener("click", async () => {
+            const code = pre.querySelector("code")?.textContent || "";
+            try {
+              await navigator.clipboard.writeText(code);
+              btn.textContent = "已复制";
+              setTimeout(() => (btn.textContent = "复制"), 1000);
+            } catch {
+              btn.textContent = "失败";
+              setTimeout(() => (btn.textContent = "复制"), 1000);
+            }
+          });
+
+          pre.appendChild(btn);
+        });
+      }
+
+      window.$docsify = {
+        name: "𝓺𝓾𝓮𝔁𝓲𝓷𝓰",
+        loadSidebar: true,
+        alias: {
+          "/.*/_sidebar.md": "/_sidebar.md",
+        },
+        topMargin: 30,
+        homepage: "home.md",
+
+        // 分页导航
+        pagination: {
+          previousText: "上一篇",
+          nextText: "下一篇",
+          crossChapter: true,
+          crossChapterText: true,
+        },
+
+        // 字数统计
+        count: {
+          countable: true,
+          fontsize: "0.9em",
+          language: "chinese",
+        },
+
+        // 最后更新时间
+        timeUpdater: {
+          text: "<div class='update-time'>最后更新时间: {docsify-updated}</div>",
+          formatUpdated: "{YYYY}/{MM}/{DD} {HH}:{mm}",
+          whereToPlace: "bottom",
+        },
+
+        // 侧边栏折叠配置 - 默认展开层级
+        sidebarDisplayLevel: 2,
+
+        // 全文搜索配置
+        search: {
+          maxAge: 86400000, // 过期时间，单位毫秒，默认一天
+          paths: "auto", // 自动索引所有页面
+          placeholder: "搜索文档...",
+          noData: "找不到相关结果",
+          depth: 3, // 搜索标题的最大层级
+          hideOtherSidebarContent: false, // 是否隐藏其他侧边栏内容
+        },
+
+        // 插件列表（顺序敏感：mermaid 必须在 shiki 之前执行，
+        // 以便 mermaid 代码块先被转换成 div，不被 shiki 当普通代码高亮）
+        plugins: [
+          // KaTeX 懒加载：文章含 $...$ 公式时才加载 katex（函数定义见上方脚本）
+          lazyKatexPlugin,
+          // Mermaid 懒加载：文章含 ```mermaid 代码块时才加载 mermaid（函数定义见上方脚本）
+          lazyMermaidPlugin,
+          // Shiki 代码高亮：shiki 内核在 window.shikiHighlight 内按需加载
+          function (hook, vm) {
+            hook.doneEach(async function () {
+              if (!window.shikiHighlight) return;
+
+              for (const block of document.querySelectorAll("pre code")) {
+                const pre = block.parentElement;
+                if (pre.classList.contains("shiki")) continue;
+
+                const lang =
+                  Array.from(block.classList)
+                    .find((c) => c.startsWith("lang-"))
+                    ?.replace("lang-", "") || "text";
+
+                pre.outerHTML = await window.shikiHighlight(block.textContent, lang);
+              }
+
+              // Shiki 高亮后重新添加复制按钮
+              addCopyButtonsToShiki();
+            });
+          },
+        ],
+
+        // （原 mermaidConfig 配置已随 docsify-mermaid 插件一并移除，
+        //   mermaid 现由 lazyMermaidPlugin 按需渲染）
+      };
+    </script>
+    <!-- Docsify v4 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify@4.13.1"></script>
+
+    <!-- plugins -->
+
+    <!-- KaTeX 全局 JS 已移除，改为懒加载（见 body 顶部脚本） -->
+    <!-- marked：搜索插件依赖其 lexer 解析表格（见下方兼容性补丁） -->
+    <script src="//cdn.jsdelivr.net/npm/marked@4.3.0"></script>
+    <!-- 兼容性补丁：marked@4 的 table token 无 cells 属性，转换为旧版格式供搜索插件使用 -->
+    <script>
+      (function () {
+        var _lexer = window.marked.lexer.bind(window.marked);
+        window.marked.lexer = function (src, options) {
+          var tokens = _lexer(src, options);
+          tokens.forEach(function (t) {
+            if (t.type === "table" && !t.cells && t.header) {
+              t.header = t.header.map(function (h) {
+                return h.text || "";
+              });
+              t.cells = (t.rows || []).map(function (row) {
+                return row.map(function (c) {
+                  return c.text || "";
+                });
+              });
+            }
+          });
+          return tokens;
+        };
+      })();
+    </script>
+    <!-- docsify-katex 已移除：其渲染逻辑由 lazyKatexPlugin 自实现（见 body 顶部脚本） -->
+    <!-- 分页导航插件 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify-pagination@2.10.1/dist/docsify-pagination.min.js"></script>
+    <!-- 图片缩放插件 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify@4.13.1/lib/plugins/zoom-image.min.js"></script>
+    <!-- 字数统计插件 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify-count@1.1.0/dist/countable.min.js"></script>
+    <!-- 最后更新时间插件 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify-updated@1.0.5/src/time-updater.min.js"></script>
+    <!-- 搜索插件 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify@4.13.1/lib/plugins/search.min.js"></script>
+    <!-- Mermaid 全局 ESM 导入与 docsify-mermaid 插件已移除，
+         改为 lazyMermaidPlugin 按需加载（见 body 顶部脚本） -->
+    <!-- 侧边栏折叠插件 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse@1.3.5/dist/docsify-sidebar-collapse.min.js"></script>
+    <!-- 脚注插件 -->
+    <script src="//cdn.jsdelivr.net/npm/docsify-footnote@1.0.8/dist/docsify-footnote.min.js"></script>
+    <!-- Shiki 代码高亮（懒加载：页面有代码块时才下载 shiki 内核） -->
+    <script>
+      // shiki 模块加载缓存：首次真正高亮时才 import，全站只加载一次。
+      // darkmode.js 切换主题重新高亮时也通过 window.loadShiki 获取模块，
+      // 因此 shiki 的版本 URL 只在本处维护。
+      let shikiModulePromise = null;
+      window.loadShiki = function () {
+        if (!shikiModulePromise) {
+          shikiModulePromise = import("https://cdn.jsdelivr.net/npm/shiki@1.29.2/+esm");
+        }
+        return shikiModulePromise;
+      };
+
+      // docsify 代码块语言别名 → shiki 语言名
+      const langMap = {
+        js: "javascript",
+        ts: "typescript",
+        py: "python",
+        sh: "bash",
+        shell: "bash",
+        yml: "yaml",
+        md: "markdown",
+      };
+
+      // 高亮入口：由 $docsify 的 Shiki 插件（doneEach）在存在代码块时调用。
+      // 首次调用才会触发 shiki 下载；语言不支持时降级为纯文本高亮。
+      window.shikiHighlight = async (code, lang) => {
+        const { codeToHtml } = await window.loadShiki();
+        lang = lang.toLowerCase();
+        lang = langMap[lang] || lang || "text";
+        const currentTheme = document.documentElement.getAttribute("data-theme") === "dark"
+          ? "catppuccin-mocha"
+          : "catppuccin-latte";
+        try {
+          return await codeToHtml(code, { lang, theme: currentTheme });
+        } catch (e) {
+          console.warn(`Shiki: Language "${lang}" not found, fallback to text`);
+          return await codeToHtml(code, { lang: "text", theme: currentTheme });
+        }
+      };
+    </script>
+
+    <!-- 红心点击特效 -->
+    <script src="https://cdn.jsdelivr.net/gh/mukeshkushwahae/click-heart-animation@v1.0.0/dist/click-heart-animation.min.js" defer></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        ClickHeartAnimation.init();
+      });
+    </script>
+
+    <!-- 暗色模式切换 -->
+    <script src="js/darkmode.js"></script>
+  </body>
+</html>
