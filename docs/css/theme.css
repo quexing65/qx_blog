@@ -187,7 +187,7 @@ blockquote {
 }
 
 [data-theme="dark"] .hero-section .hero-subtitle {
-  color: #71717a;
+  color: #a1a1aa;
 }
 
 /* --- 文章列表卡片 --- */
@@ -201,7 +201,7 @@ blockquote {
 }
 
 [data-theme="dark"] .article-card {
-  background: #252540;
+  background: #2d2d31;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
 }
 
@@ -227,14 +227,14 @@ blockquote {
 
 /* --- 文章列表项 --- */
 .article-date {
-  color: #aaa;
+  color: #737373;
   font-size: 0.85em;
   float: right;
   margin-top: 3px;
 }
 
 [data-theme="dark"] .article-date {
-  color: #71717a;
+  color: #a1a1aa;
 }
 
 /* 首页文章列表样式 - 只作用于首页 */
@@ -252,12 +252,12 @@ blockquote {
 }
 
 .article-item .article-date {
-  color: #aaa;
+  color: #737373;
   font-size: 0.85em;
 }
 
 [data-theme="dark"] .article-item .article-date {
-  color: #71717a;
+  color: #a1a1aa;
 }
 
 /* --- 联系信息 --- */
