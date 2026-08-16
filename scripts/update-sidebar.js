@@ -94,7 +94,7 @@ function scanDirectory(dir, basePath = "") {
   return result;
 }
 
-function renderList(items, level = 0, showTime = false) {
+function renderList(items, level = 0) {
   const indent = "  ".repeat(level);
   let content = "";
 
@@ -102,21 +102,13 @@ function renderList(items, level = 0, showTime = false) {
     const item = items[i];
 
     if (item.type === "folder") {
-      if (showTime) {
-        content += `<div class="article-folder">${toDisplayName(item.name)}</div>\n`;
-      } else {
-        content += `${indent}- ${toDisplayName(item.name)}\n`;
-      }
-      content += renderList(item.children, level + 1, showTime);
+      content += `${indent}- ${toDisplayName(item.name)}\n`;
+      content += renderList(item.children, level + 1);
       if (level === 0 && i < items.length - 1) {
         content += "\n";
       }
     } else {
-      if (showTime) {
-        content += `<div class="article-item"><span><a href="${item.path}">${item.title}</a></span><span class="article-date">${item.updateDate || item.publishDate}</span></div>\n`;
-      } else {
-        content += `${indent}- [${item.title}](${item.path})\n`;
-      }
+      content += `${indent}- [${item.title}](${item.path})\n`;
     }
   }
 
@@ -138,7 +130,7 @@ function collectAllFiles(items) {
 
 const structure = scanDirectory(NOTE_DIR);
 
-fs.writeFileSync(SIDEBAR_FILE, renderList(structure, 0, false));
+fs.writeFileSync(SIDEBAR_FILE, renderList(structure));
 console.log(`已更新: ${SIDEBAR_FILE}`);
 
 // 首页用扁平化文章列表（不分文件夹，按 updated/date 排序）
