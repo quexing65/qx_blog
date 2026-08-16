@@ -17,6 +17,20 @@ function toDisplayName(name) {
   return name.replace(/_/g, " ");
 }
 
+// 解析文章头部的 front-matter（--- \n date: YYYY-MM-DD \n updated: YYYY-MM-DD \n ---）。
+// 返回 { date, updated }，字段缺失或格式不对时对应值为 null。
+// 文章日期以此为准：文件 mtime 在换电脑 / 重新 clone 后会丢失，
+// front-matter 跟着内容走，走到哪台电脑都不会变。
+function readFrontMatter(content) {
+  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!match) return null;
+  const read = (key) => {
+    const line = match[1].match(new RegExp("^" + key + ":\\s*(\\d{4}-\\d{2}-\\d{2})\\s*$", "m"));
+    return line ? line[1] : null;
+  };
+  return { date: read("date"), updated: read("updated") };
+}
+
 function scanDirectory(dir, basePath = "") {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   const result = [];
@@ -28,22 +42,41 @@ function scanDirectory(dir, basePath = "") {
       if (IGNORE_DIRS.has(entry.name)) continue;
       const children = scanDirectory(path.join(dir, entry.name), relativePath);
       if (children.length > 0) {
-        const folderTime = children.reduce((max, c) => (c.modifyTime > max ? c.modifyTime : max), "0000-00-00");
+        const folderTime = children.reduce((max, c) => (c.sortDate > max ? c.sortDate : max), "0000-00-00");
         result.push({
           type: "folder",
           name: entry.name,
           children: children,
-          modifyTime: folderTime,
+          sortDate: folderTime,
         });
       }
     } else if (entry.isFile() && entry.name.endsWith(".md")) {
       const filePath = path.join(dir, entry.name);
       const stats = fs.statSync(filePath);
+      const content = fs.readFileSync(filePath, "utf-8");
+      let meta = readFrontMatter(content);
+
+      // 新文章没有 front-matter：用当前 mtime 自动补写进文件并保存。
+      // 日期在第一次生成时即被锁定，之后重跑脚本、改内容、换电脑都不再受 mtime 漂移影响
+      if (!meta) {
+        const mtimeDate = formatDate(stats.mtime);
+        fs.writeFileSync(filePath, "---\ndate: " + mtimeDate + "\n---\n\n" + content, "utf-8");
+        meta = { date: mtimeDate, updated: null };
+        console.log("已自动补写 front-matter (date: " + mtimeDate + "): " + filePath);
+      } else if (!meta.date) {
+        console.warn("警告: " + filePath + " 的 front-matter 缺少有效 date 字段，本次按 mtime 显示");
+      }
+
+      // publishDate = 发布日期（front-matter 缺失时退回 mtime）
+      // sortDate = 排序口径：有 updated（最后内容更新日）用 updated，否则用发布日期
+      const publishDate = meta.date || formatDate(stats.mtime);
       result.push({
         type: "file",
         title: toDisplayName(entry.name.replace(/\.md$/, "")),
         path: "note/" + relativePath.replace(/\\/g, "/"),
-        modifyTime: formatDate(stats.mtime),
+        publishDate: publishDate,
+        updateDate: meta.updated || null,
+        sortDate: meta.updated || publishDate,
       });
     }
   }
@@ -53,7 +86,7 @@ function scanDirectory(dir, basePath = "") {
       return a.name.localeCompare(b.name);
     }
     if (a.type === "file" && b.type === "file") {
-      return b.modifyTime.localeCompare(a.modifyTime);
+      return b.sortDate.localeCompare(a.sortDate);
     }
     return a.type === "folder" ? -1 : 1;
   });
@@ -80,7 +113,7 @@ function renderList(items, level = 0, showTime = false) {
       }
     } else {
       if (showTime) {
-        content += `<div class="article-item"><span><a href="${item.path}">${item.title}</a></span><span class="article-date">${item.modifyTime}</span></div>\n`;
+        content += `<div class="article-item"><span><a href="${item.path}">${item.title}</a></span><span class="article-date">${item.updateDate || item.publishDate}</span></div>\n`;
       } else {
         content += `${indent}- [${item.title}](${item.path})\n`;
       }
@@ -100,7 +133,7 @@ function collectAllFiles(items) {
       files.push(item);
     }
   }
-  return files.sort((a, b) => b.modifyTime.localeCompare(a.modifyTime));
+  return files.sort((a, b) => b.sortDate.localeCompare(a.sortDate));
 }
 
 const structure = scanDirectory(NOTE_DIR);
@@ -108,11 +141,17 @@ const structure = scanDirectory(NOTE_DIR);
 fs.writeFileSync(SIDEBAR_FILE, renderList(structure, 0, false));
 console.log(`已更新: ${SIDEBAR_FILE}`);
 
-// 首页用扁平化文章列表（不分文件夹，按日期排序）
+// 首页用扁平化文章列表（不分文件夹，按 updated/date 排序）
 const templateContent = fs.readFileSync(TEMPLATE_FILE, "utf-8");
 const allFiles = collectAllFiles(structure);
 const homeContent = allFiles
-  .map((f) => `- [${f.title}](${f.path}) <span class="article-date">${f.modifyTime}</span>`)
+  .map((f) => {
+    // 有 updated 的文章同时展示两个日期，与排序口径一致
+    const dateText = f.updateDate
+      ? `发布于 ${f.publishDate} · 更新于 ${f.updateDate}`
+      : f.publishDate;
+    return `- [${f.title}](${f.path}) <span class="article-date">${dateText}</span>`;
+  })
   .join("\n");
 fs.writeFileSync(HOME_FILE, templateContent.replace("{{ARTICLE_LIST}}", homeContent.trimEnd()));
 console.log(`已更新: ${HOME_FILE}`);
