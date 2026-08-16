@@ -191,39 +191,10 @@ blockquote {
 }
 
 /* --- 文章列表卡片 --- */
-.article-card {
-  background: #fff;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  margin-bottom: 16px;
-  transition: background var(--transition-duration), box-shadow var(--transition-duration);
-}
-
-[data-theme="dark"] .article-card {
-  background: #2d2d31;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
-}
-
-.article-card h3 {
-  color: var(--theme-color);
-  font-size: 1em;
-  margin: 0 0 12px;
-}
+/* （.article-card 系列样式已删除：全仓库无任何页面生成该类，系旧版设计遗留死样式） */
 
 /* --- 文章分类标题 --- */
-.article-folder {
-  color: var(--theme-color);
-  font-weight: 600;
-  font-size: 0.95em;
-  margin-top: 12px;
-  margin-bottom: 4px;
-  padding-left: 2px;
-}
-
-.article-folder:first-child {
-  margin-top: 0;
-}
+/* （.article-folder 样式已删除：仅 update-sidebar.js 已移除的 showTime 分支会生成该类，属死样式） */
 
 /* --- 文章列表项 --- */
 .article-date {
@@ -247,18 +218,7 @@ blockquote {
   line-height: 1.8;
 }
 
-.article-item:last-child {
-  border-bottom: none;
-}
-
-.article-item .article-date {
-  color: #737373;
-  font-size: 0.85em;
-}
-
-[data-theme="dark"] .article-item .article-date {
-  color: #a1a1aa;
-}
+/* （.article-item 系列样式已删除：仅 update-sidebar.js 已移除的 showTime 分支会生成该类，属死样式） */
 
 /* --- 联系信息 --- */
 .contact-info {
