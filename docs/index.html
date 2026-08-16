@@ -104,7 +104,7 @@
       function loadMermaid() {
         if (!mermaidPromise) {
           mermaidPromise = import(
-            "https:https://cdn.jsdelivr.net/npm/mermaid@10.9.6/dist/mermaid.esm.min.mjs"
+            "https://cdn.jsdelivr.net/npm/mermaid@10.9.6/dist/mermaid.esm.min.mjs"
           ).then(function (module) { return module.default; });
         }
         return mermaidPromise;
@@ -139,6 +139,14 @@
     </script>
 
     <script>
+      // 剥离文章开头的 front-matter（--- date: ... ---，供 update-sidebar.js 读取），
+      // 防止它被渲染成正文里的分隔线和 "date: ..." 文字
+      function stripFrontMatterPlugin(hook) {
+        hook.beforeEach(function (content) {
+          return content.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, "");
+        });
+      }
+
       // Shiki 高亮后添加复制按钮的函数
       function addCopyButtonsToShiki() {
         document.querySelectorAll("pre.shiki").forEach((pre) => {
@@ -211,6 +219,8 @@
         // 插件列表（顺序敏感：mermaid 必须在 shiki 之前执行，
         // 以便 mermaid 代码块先被转换成 div，不被 shiki 当普通代码高亮）
         plugins: [
+          // front-matter 剥离：去掉文章头部 --- date: ... --- 块（函数定义见上方脚本）
+          stripFrontMatterPlugin,
           // KaTeX 懒加载：文章含 $...$ 公式时才加载 katex（函数定义见上方脚本）
           lazyKatexPlugin,
           // Mermaid 懒加载：文章含 ```mermaid 代码块时才加载 mermaid（函数定义见上方脚本）
@@ -297,7 +307,7 @@
       let shikiModulePromise = null;
       window.loadShiki = function () {
         if (!shikiModulePromise) {
-          shikiModulePromise = import("https:https://cdn.jsdelivr.net/npm/shiki@1.29.2/+esm");
+          shikiModulePromise = import("https://cdn.jsdelivr.net/npm/shiki@1.29.2/+esm");
         }
         return shikiModulePromise;
       };
@@ -332,7 +342,7 @@
     </script>
 
     <!-- 红心点击特效 -->
-    <script src="https:https://cdn.jsdelivr.net/gh/mukeshkushwahae/click-heart-animation@v1.0.0/dist/click-heart-animation.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/gh/mukeshkushwahae/click-heart-animation@v1.0.0/dist/click-heart-animation.min.js" defer></script>
     <script>
       window.addEventListener("DOMContentLoaded", () => {
         ClickHeartAnimation.init();
