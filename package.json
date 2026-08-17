@@ -1,0 +1,10 @@
+{
+  "name": "qx_blog",
+  "private": true,
+  "description": "quexing 的个人博客，基于 Docsify",
+  "scripts": {
+    "update": "node scripts/update-sidebar.js",
+    "check": "node scripts/check-spaces.js",
+    "serve": "npx -y docsify-cli serve docs -p 3000"
+  }
+}
