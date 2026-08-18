@@ -9,8 +9,13 @@ const TEMPLATE_FILE = path.join(__dirname, "template.md");
 
 const IGNORE_DIRS = new Set(["archive"]);
 
+// 用本地时区取日期，而不是 toISOString()（UTC）：
+// 否则北京时间 0-8 点创建的文件会被记成前一天的日期
 function formatDate(date) {
-  return date.toISOString().split("T")[0];
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
 
 function toDisplayName(name) {
@@ -53,7 +58,9 @@ function scanDirectory(dir, basePath = "") {
     } else if (entry.isFile() && entry.name.endsWith(".md")) {
       const filePath = path.join(dir, entry.name);
       const stats = fs.statSync(filePath);
-      const content = fs.readFileSync(filePath, "utf-8");
+      // 读入时剥离 UTF-8 BOM 头（Windows 记事本保存的文件常见）：
+      // BOM 会让下方 ^--- 匹配不到 front-matter，导致误判后重复补写
+      const content = fs.readFileSync(filePath, "utf-8").replace(/^\uFEFF/, "");
       let meta = readFrontMatter(content);
 
       // 新文章没有 front-matter：用当前 mtime 自动补写进文件并保存。

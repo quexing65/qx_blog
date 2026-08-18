@@ -155,10 +155,26 @@
 
     <script>
       // 剥离文章开头的 front-matter（--- date: ... ---，供 update-sidebar.js 读取），
-      // 防止它被渲染成正文里的分隔线和 "date: ..." 文字
+      // 防止它被渲染成正文里的分隔线和 "date: ..." 文字。
+      // \uFEFF? 容忍 UTF-8 BOM 头（Windows 记事本保存的文件常见），与脚本侧的剥离逻辑保持一致
       function stripFrontMatterPlugin(hook) {
         hook.beforeEach(function (content) {
-          return content.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, "");
+          return content.replace(/^\uFEFF?---\r?\n[\s\S]*?\r?\n---\r?\n?/, "");
+        });
+      }
+
+      // 动态标题：渲染完成后把当前文章名写进 document.title，
+      // 让浏览器标签 / 历史记录 / 分享链接能区分文章（对会执行 JS 的爬虫也有效）。
+      // 命名口径与侧边栏生成脚本一致：文件名去 .md、下划线转空格
+      function updateTitlePlugin(hook, vm) {
+        hook.doneEach(function () {
+          const base = "quexing 的博客";
+          const file = vm.route.file; // 如 "note/win_e.md"、"home.md"
+          const name =
+            file && file !== "home.md"
+              ? decodeURIComponent(file.split("/").pop().replace(/\.md$/, "")).replace(/_/g, " ")
+              : "";
+          document.title = name ? name + " · " + base : base;
         });
       }
 
