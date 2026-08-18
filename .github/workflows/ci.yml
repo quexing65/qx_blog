@@ -1,0 +1,51 @@
+# CI：把本地 pre-commit 的检查复制到远端，不依赖"本机记得跑"
+# - check job：文件名空格检查 + 重新生成侧边栏/首页 + 校验与提交版本一致（drift）
+# - links job：index.html 外链可用性检查（2026-08-17 CDN 事故的兜底）
+# 两个 job 分开跑：链接检查偶发限流不会连累同步检查的信号
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    name: 文章与侧边栏/首页同步检查
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 文件名空格检查
+        run: npm run check
+
+      - name: 重新生成侧边栏与首页
+        run: npm run update
+
+      # drift 校验覆盖整个 docs/：
+      # _sidebar.md/home.md 变化 = 忘了跑 npm run update；
+      # note/ 下文章变化 = 有文章缺 front-matter 被 CI 补写了
+      - name: 校验生成文件与提交版本一致
+        id: drift
+        run: git diff --exit-code docs/
+
+      - name: 漂移提示
+        if: failure() && steps.drift.conclusion == 'failure'
+        run: echo "::error::docs/ 下的生成文件与提交版本不一致：请本地运行 npm run update，把生成的 _sidebar.md、home.md（及补写了 front-matter 的文章）一起提交后再 push"
+
+  links:
+    name: 外链可用性检查
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm run check:links

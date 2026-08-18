@@ -252,6 +252,8 @@
         plugins: [
           // front-matter 剥离：去掉文章头部 --- date: ... --- 块（函数定义见上方脚本）
           stripFrontMatterPlugin,
+          // 动态标题：当前文章名写入 document.title（函数定义见上方脚本）
+          updateTitlePlugin,
           // KaTeX 懒加载：文章含 $...$ 公式时才加载 katex（函数定义见上方脚本）
           lazyKatexPlugin,
           // Mermaid 懒加载：文章含 ```mermaid 代码块时才加载 mermaid（函数定义见上方脚本）
