@@ -24,6 +24,9 @@ jobs:
       - name: 文件名空格检查
         run: npm run check
 
+      - name: 单元测试
+        run: npm test
+
       - name: 重新生成侧边栏与首页
         run: npm run update
 
