@@ -6,6 +6,7 @@
     "update": "node scripts/update-sidebar.js",
     "check": "node scripts/check-spaces.js",
     "check:links": "node scripts/check-links.js",
+    "test": "node --test scripts/*.test.js",
     "serve": "npx -y docsify-cli serve docs -p 3000"
   }
 }

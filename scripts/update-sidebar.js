@@ -137,24 +137,29 @@ function collectAllFiles(items) {
   return files.sort((a, b) => b.sortDate.localeCompare(a.sortDate));
 }
 
-const structure = scanDirectory(NOTE_DIR);
+// 供测试 require 使用；直接执行（npm run update）时才跑主流程
+module.exports = { formatDate, toDisplayName, readFrontMatter, scanDirectory, renderList, collectAllFiles };
 
-fs.writeFileSync(SIDEBAR_FILE, renderList(structure));
-console.log(`已更新: ${SIDEBAR_FILE}`);
+if (require.main === module) {
+  const structure = scanDirectory(NOTE_DIR);
 
-// 首页用扁平化文章列表（不分文件夹，按 updated/date 排序）
-const templateContent = fs.readFileSync(TEMPLATE_FILE, "utf-8");
-const allFiles = collectAllFiles(structure);
-const homeContent = allFiles
-  .map((f) => {
-    // 有 updated 的文章同时展示两个日期，与排序口径一致
-    const dateText = f.updateDate
-      ? `发布于 ${f.publishDate} · 更新于 ${f.updateDate}`
-      : f.publishDate;
-    return `- [${f.title}](${f.path}) <span class="article-date">${dateText}</span>`;
-  })
-  .join("\n");
-fs.writeFileSync(HOME_FILE, templateContent.replace("{{ARTICLE_LIST}}", homeContent.trimEnd()));
-console.log(`已更新: ${HOME_FILE}`);
+  fs.writeFileSync(SIDEBAR_FILE, renderList(structure));
+  console.log(`已更新: ${SIDEBAR_FILE}`);
 
-console.log(`共 ${structure.length} 个分类`);
+  // 首页用扁平化文章列表（不分文件夹，按 updated/date 排序）
+  const templateContent = fs.readFileSync(TEMPLATE_FILE, "utf-8");
+  const allFiles = collectAllFiles(structure);
+  const homeContent = allFiles
+    .map((f) => {
+      // 有 updated 的文章同时展示两个日期，与排序口径一致
+      const dateText = f.updateDate
+        ? `发布于 ${f.publishDate} · 更新于 ${f.updateDate}`
+        : f.publishDate;
+      return `- [${f.title}](${f.path}) <span class="article-date">${dateText}</span>`;
+    })
+    .join("\n");
+  fs.writeFileSync(HOME_FILE, templateContent.replace("{{ARTICLE_LIST}}", homeContent.trimEnd()));
+  console.log(`已更新: ${HOME_FILE}`);
+
+  console.log(`共 ${structure.length} 个分类`);
+}
