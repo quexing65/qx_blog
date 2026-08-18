@@ -90,7 +90,9 @@ function scanDirectory(dir, basePath = "") {
 
   result.sort((a, b) => {
     if (a.type === "folder" && b.type === "folder") {
-      return a.name.localeCompare(b.name);
+      // 锁定中文排序 locale：不带参数时跟随系统（Windows 中文 = 拼音序，
+      // CI Linux 英文环境 = 部首序），两边生成顺序不同会导致 CI drift 校验误报
+      return a.name.localeCompare(b.name, "zh-Hans-CN");
     }
     if (a.type === "file" && b.type === "file") {
       return b.sortDate.localeCompare(a.sortDate);
