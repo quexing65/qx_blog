@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  只列首页的原因：Docsify 用 hash 路由（文章地址形如 /#/note/win_e），
+  带 # 的部分不会发给服务器，搜索引擎也不把它当成独立页面，列进 sitemap 无效。
+  文章页想被收录，前提是迁移到构建时预渲染方案（见 优化清单.md 的「已知局限」）。
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://b.quexing.cc.cd/</loc>
+  </url>
+</urlset>
