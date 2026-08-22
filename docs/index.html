@@ -163,6 +163,27 @@
         });
       }
 
+      // 文章底部的"最后更新时间"：读 front-matter 的 updated（缺失退回 date），
+      // 解析口径与 scripts/update-sidebar.js 的 readFrontMatter 一致。
+      // 原先用 docsify-updated 插件，其时间取自服务器返回的 Last-Modified 响应头，
+      // 而 Vercel 返回的是请求/缓存时刻（实测与 Date 响应头相同），与文章真实
+      // 修改时间无关，故弃用，改用跟着内容走的 front-matter 日期。
+      // 注意：必须在 stripFrontMatterPlugin 之前执行（plugins 数组里排在前面），
+      // 否则 front-matter 已被剥掉、读不到日期。
+      function frontMatterTimePlugin(hook) {
+        hook.beforeEach(function (content) {
+          const match = content.match(/^\uFEFF?---\r?\n([\s\S]*?)\r?\n---/);
+          if (!match) return content;
+          const read = function (key) {
+            const line = match[1].match(new RegExp("^" + key + ":\\s*(\\d{4}-\\d{2}-\\d{2})\\s*$", "m"));
+            return line ? line[1] : null;
+          };
+          const date = read("updated") || read("date");
+          if (!date) return content;
+          return content + "\n\n<div class='update-time'>最后更新时间: " + date + "</div>";
+        });
+      }
+
       // 动态标题：渲染完成后把当前文章名写进 document.title，
       // 让浏览器标签 / 历史记录 / 分享链接能区分文章（对会执行 JS 的爬虫也有效）。
       // 命名口径与侧边栏生成脚本一致：文件名去 .md、下划线转空格
@@ -227,12 +248,8 @@
           language: "chinese",
         },
 
-        // 最后更新时间
-        timeUpdater: {
-          text: "<div class='update-time'>最后更新时间: {docsify-updated}</div>",
-          formatUpdated: "{YYYY}/{MM}/{DD} {HH}:{mm}",
-          whereToPlace: "bottom",
-        },
+        // （timeUpdater 配置已随 docsify-updated 插件一并移除，
+        //   最后更新时间现由 frontMatterTimePlugin 从 front-matter 读取）
 
         // 侧边栏折叠配置 - 默认展开层级
         sidebarDisplayLevel: 2,
@@ -247,9 +264,12 @@
           hideOtherSidebarContent: false, // 是否隐藏其他侧边栏内容
         },
 
-        // 插件列表（顺序敏感：mermaid 必须在 shiki 之前执行，
+        // 插件列表（顺序敏感：frontMatterTime 必须在 front-matter 剥离之前执行，
+        // 否则读不到日期；mermaid 必须在 shiki 之前执行，
         // 以便 mermaid 代码块先被转换成 div，不被 shiki 当普通代码高亮）
         plugins: [
+          // 最后更新时间：读 front-matter 的 updated/date 显示在文章底部（函数定义见上方脚本）
+          frontMatterTimePlugin,
           // front-matter 剥离：去掉文章头部 --- date: ... --- 块（函数定义见上方脚本）
           stripFrontMatterPlugin,
           // 动态标题：当前文章名写入 document.title（函数定义见上方脚本）
@@ -322,8 +342,8 @@
     <script src="https://cdn.jsdelivr.net/npm/docsify@4.13.1/lib/plugins/zoom-image.min.js"></script>
     <!-- 字数统计插件 -->
     <script src="https://cdn.jsdelivr.net/npm/docsify-count@1.1.0/dist/countable.min.js"></script>
-    <!-- 最后更新时间插件 -->
-    <script src="https://cdn.jsdelivr.net/npm/docsify-updated@1.0.5/src/time-updater.min.js"></script>
+    <!-- docsify-updated 已移除：其时间取自 Last-Modified 响应头，Vercel 上不可靠，
+         现由 frontMatterTimePlugin 从 front-matter 读取（见上方脚本） -->
     <!-- 搜索插件 -->
     <script src="https://cdn.jsdelivr.net/npm/docsify@4.13.1/lib/plugins/search.min.js"></script>
     <!-- Mermaid 全局 ESM 导入与 docsify-mermaid 插件已移除，
