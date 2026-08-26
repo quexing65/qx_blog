@@ -48,10 +48,9 @@
     const blocks = document.querySelectorAll("pre.shiki");
     if (blocks.length === 0) return;
 
-    const shikiTheme = theme === DARK ? "catppuccin-mocha" : "catppuccin-latte";
-    // 复用 index.html 中的 shiki 懒加载器（版本 URL 只在那里维护一处，避免两处漂移）
-    if (!window.loadShiki) return;
-    const { codeToHtml } = await window.loadShiki();
+    // 复用 index.html 中的 shikiHighlight（含 data-lang / language-class 补写，
+    // 不要直接调 codeToHtml，绕过会丢失标记导致代码块换行被折叠）
+    if (!window.shikiHighlight) return;
 
     const tasks = Array.from(blocks).map(async (pre) => {
       const code = pre.querySelector("code");
@@ -62,7 +61,7 @@
       );
       const lang = langClass ? langClass.replace(/^lang(uage)?-/, "") : "text";
       try {
-        pre.outerHTML = await codeToHtml(code.textContent, { lang, theme: shikiTheme });
+        pre.outerHTML = await window.shikiHighlight(code.textContent, lang);
       } catch (e) {
         // fallback: keep current
       }

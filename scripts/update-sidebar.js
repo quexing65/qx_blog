@@ -9,6 +9,18 @@ const TEMPLATE_FILE = path.join(__dirname, "template.md");
 
 const IGNORE_DIRS = new Set(["archive"]);
 
+// 首页文章流排除的顶级分类：知识库从 vault 整体同步（scripts/sync-vault.js），
+// 篇幅大且非按时间消费的内容，首页不收录，从侧边栏「知识库」分类进入
+const HOME_EXCLUDE_DIRS = new Set(["知识库"]);
+
+// 文件名以「数字.」开头（如 01.xxx）视为教程编号章节：
+// 同目录内排在无编号文件之前，按编号升序（01→02→10），
+// 与「最新在前」的日期倒序互补，保证教程系列的阅读顺序
+function chapterNumber(name) {
+  const m = name.match(/^(\d+)\./);
+  return m ? Number(m[1]) : null;
+}
+
 // 用本地时区取日期，而不是 toISOString()（UTC）：
 // 否则北京时间 0-8 点创建的文件会被记成前一天的日期
 function formatDate(date) {
@@ -80,7 +92,9 @@ function scanDirectory(dir, basePath = "") {
       result.push({
         type: "file",
         title: toDisplayName(entry.name.replace(/\.md$/, "")),
-        path: "note/" + relativePath.replace(/\\/g, "/"),
+        // 带 / 前缀的绝对路径：index.html 开了 relativePath（相对链接按当前
+        // 页面解析），侧边栏/首页链接若不带 / 在深层页面会被拼到当前目录下
+        path: "/note/" + relativePath.replace(/\\/g, "/"),
         publishDate: publishDate,
         updateDate: meta.updated || null,
         sortDate: meta.updated || publishDate,
@@ -95,6 +109,15 @@ function scanDirectory(dir, basePath = "") {
       return a.name.localeCompare(b.name, "zh-Hans-CN");
     }
     if (a.type === "file" && b.type === "file") {
+      // 编号章节优先按编号排（见 chapterNumber 注释），其余按日期倒序
+      // 注意：文件项只有 title（去 .md、下划线转空格后的显示名），编号前缀不受影响
+      const na = chapterNumber(a.title);
+      const nb = chapterNumber(b.title);
+      if (na !== null || nb !== null) {
+        if (na === null) return 1;
+        if (nb === null) return -1;
+        return na - nb;
+      }
       return b.sortDate.localeCompare(a.sortDate);
     }
     return a.type === "folder" ? -1 : 1;
@@ -111,11 +134,12 @@ function renderList(items, level = 0) {
     const item = items[i];
 
     if (item.type === "folder") {
+      // 注意：输出必须保持全紧致（条目间不留空行）。markdown 解析器会把空行
+      // 分隔的「松散列表」条目文本包进 <p>，紧致列表则保留裸文本——裸文本
+      // 结构下所有层级的文件夹/文件才能共用同一套行内图标 CSS（li::before），
+      // 混用两种结构会导致部分层级图标错位或丢失
       content += `${indent}- ${toDisplayName(item.name)}\n`;
       content += renderList(item.children, level + 1);
-      if (level === 0 && i < items.length - 1) {
-        content += "\n";
-      }
     } else {
       content += `${indent}- [${item.title}](${item.path})\n`;
     }
@@ -124,12 +148,14 @@ function renderList(items, level = 0) {
   return content;
 }
 
-// 收集所有文章（扁平化，按日期排序）
-function collectAllFiles(items) {
+// 收集所有文章（扁平化，按日期排序）。
+// excludeDirs：按分类名排除的目录（首页文章流用，侧边栏渲染不走这里）
+function collectAllFiles(items, excludeDirs = new Set()) {
   const files = [];
   for (const item of items) {
     if (item.type === "folder") {
-      files.push(...collectAllFiles(item.children));
+      if (excludeDirs.has(item.name)) continue;
+      files.push(...collectAllFiles(item.children, excludeDirs));
     } else {
       files.push(item);
     }
@@ -146,9 +172,9 @@ if (require.main === module) {
   fs.writeFileSync(SIDEBAR_FILE, renderList(structure));
   console.log(`已更新: ${SIDEBAR_FILE}`);
 
-  // 首页用扁平化文章列表（不分文件夹，按 updated/date 排序）
+  // 首页用扁平化文章列表（不分文件夹，按 updated/date 排序，知识库等分类不进首页）
   const templateContent = fs.readFileSync(TEMPLATE_FILE, "utf-8");
-  const allFiles = collectAllFiles(structure);
+  const allFiles = collectAllFiles(structure, HOME_EXCLUDE_DIRS);
   const homeContent = allFiles
     .map((f) => {
       // 有 updated 的文章同时展示两个日期，与排序口径一致

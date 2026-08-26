@@ -1,0 +1,70 @@
+/* ============================================================
+   自定义侧边栏样式（抄自 bw_docsify，依赖 docsify v5 原生结构）
+   实现：文件夹/文件图标 + 300px 宽度 + v4 观感
+   依赖：docsify v5 渲染的 .sidebar-nav / li.group 结构
+   ============================================================ */
+/* ---------- 侧边栏宽度（与参考项目一致） ---------- */
+:root {
+  --sidebar-width: 300px;
+}
+/* ---------- 文字与间距 ---------- */
+.sidebar-nav {
+  line-height: 2em;
+  padding-bottom: 40px;
+}
+.sidebar-nav li a {
+  font-size: 14px;
+  padding-right: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* 嵌套子列表缩进 */
+.sidebar-nav li.group > ul {
+  padding-left: 15px;
+}
+/* ---------- 列表布局（缩进 / 间距 / 光标） ---------- */
+.sidebar-nav > ul {
+  margin-left: 20px;
+}
+.sidebar-nav ul:not(.app-sub-sidebar) > li {
+  position: relative;
+  margin: 0;
+  margin-left: 4px;
+  cursor: pointer;
+}
+/* ---------- 图标（蓝色文件夹 / 主题色文件 SVG） ---------- */
+.sidebar-nav ul:not(.app-sub-sidebar) > li::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: -16px;
+  height: 14px;
+  width: 14px;
+}
+/* 文件夹图标（分组）：用参考项目的蓝色 folder.svg */
+.sidebar-nav ul:not(.app-sub-sidebar) > li.group::before {
+  background: center/contain no-repeat url(../_assets/folder.svg);
+}
+/* 文件图标（页面）：file.svg 无填充色，浅色背景上隐形。
+   改用 mask 镂空 + 主题色填充，亮色 #555 / 暗色 #a1a1aa 跟随侧栏链接色 */
+.sidebar-nav ul:not(.app-sub-sidebar) > li:not(.group)::before {
+  background: center/contain no-repeat;
+  background-color: var(--sidebar-link-color, #555);
+  -webkit-mask: url(../_assets/file.svg) center/contain no-repeat;
+  mask: url(../_assets/file.svg) center/contain no-repeat;
+}
+/* ---------- 折叠/展开 ---------- */
+.sidebar-nav li.collapse > ul {
+  display: none;
+}
+/* ---------- 站点名 / 搜索框 ---------- */
+.sidebar .app-name {
+  font-size: 24px;
+  margin: 0 0 16px;
+  font-weight: 500;
+}
+.search input {
+  height: 37px;
+  padding: 9px 7px;
+}
