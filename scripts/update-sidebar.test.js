@@ -9,7 +9,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
-const { formatDate, toDisplayName, readFrontMatter, scanDirectory } = require("./update-sidebar.js");
+const { formatDate, toDisplayName, readFrontMatter, scanDirectory, collectAllFiles, renderList } = require("./update-sidebar.js");
 
 /* ================= readFrontMatter ================= */
 
@@ -151,4 +151,44 @@ test("scanDirectory: updated 优先进 sortDate，文章按其降序排列", () 
   assert.strictEqual(result[0].title, "a旧文");
   assert.strictEqual(result[0].sortDate, "2026-03-01");
   assert.strictEqual(result[1].sortDate, "2026-02-01");
+});
+
+test("scanDirectory: 数字编号章节按编号升序且排在无编号文件之前", () => {
+  // 10 用字符串比较会排在 02 前（'1'<'0' 为 false，但 '10'<'2' 为 true），
+  // 因此必须按数值比较；同时无编号文件即使日期最新也排在编号章节之后
+  fs.writeFileSync(path.join(tmpDir, "10.第三章.md"), "---\ndate: 2026-01-01\n---\nx");
+  fs.writeFileSync(path.join(tmpDir, "02.第二章.md"), "---\ndate: 2026-01-01\n---\nx");
+  fs.writeFileSync(path.join(tmpDir, "01.第一章.md"), "---\ndate: 2026-01-01\n---\nx");
+  fs.writeFileSync(path.join(tmpDir, "关于.md"), "---\ndate: 2026-09-01\n---\nx");
+
+  const result = scanDirectory(tmpDir);
+  assert.deepStrictEqual(result.map((r) => r.title), ["01.第一章", "02.第二章", "10.第三章", "关于"]);
+});
+
+test("collectAllFiles: 排除指定分类（知识库不进首页文章流）", () => {
+  fs.mkdirSync(path.join(tmpDir, "知识库"));
+  fs.writeFileSync(path.join(tmpDir, "知识库", "01.教程.md"), "---\ndate: 2026-01-01\n---\nx");
+  fs.writeFileSync(path.join(tmpDir, "随笔.md"), "---\ndate: 2026-02-01\n---\nx");
+
+  const structure = scanDirectory(tmpDir);
+  const files = collectAllFiles(structure, new Set(["知识库"]));
+  assert.deepStrictEqual(files.map((f) => f.title), ["随笔"]);
+});
+
+/* ================= renderList ================= */
+
+test("renderList: 输出全紧致列表（任意层级条目间无空行）", () => {
+  // 空行会让解析器把列表判为「松散」并把条目文本包进 <p>，
+  // 导致部分层级文件夹出现 p 结构、部分为裸文本，行内图标 CSS 无法统一覆盖。
+  // 此断言防止未来有人“美化”输出格式而破坏侧边栏图标
+  const out = renderList([
+    {
+      type: "folder",
+      name: "Linux",
+      children: [{ type: "file", title: "01.简介", path: "note/Linux/01.简介.md" }],
+    },
+    { type: "file", title: "随笔", path: "note/随笔.md" },
+  ]);
+  assert.strictEqual(out, "- Linux\n  - [01.简介](note/Linux/01.简介.md)\n- [随笔](note/随笔.md)\n");
+  assert.ok(!out.includes("\n\n"), "输出中不应出现空行");
 });

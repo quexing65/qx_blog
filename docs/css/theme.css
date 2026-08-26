@@ -1,84 +1,75 @@
 /* ============================================
-   docsify-themeable 自定义主题
+   docsify v5 自定义主题（core + vue addon 之上）
    品牌色: #B55A5A (亮色) / #e8a0bf (暗色)
    字体: LXGW WenKai + Maple Mono CN
+   说明: v5 的变量体系与 v4-themeable 完全不同，
+   这里用 v5 的 CSS 变量 + data-theme 属性实现暗色模式
    ============================================ */
 
-/* --- 亮色模式变量 --- */
+/* --- 亮色模式（覆盖 vue addon 的默认变量） --- */
 :root {
-  --base-background-color: #fefcf9;
-  --base-text-color: #2c2c2c;
-  --base-font-family: "LXGW WenKai", "PingFang SC", "Microsoft YaHei", sans-serif;
-  --base-font-weight: 500;
-
-  --sidebar-width: 260px;
-  --sidebar-background: #faf7f3;
-  --sidebar-border-color: rgba(181, 90, 90, 0.12);
-  --sidebar-nav-link-color--active: #B55A5A;
-  --sidebar-nav-link-font-weight--active: 700;
-  --sidebar-nav-link-color: #555;
-
-  --heading-color: #B55A5A;
-  --link-color: #B55A5A;
-  --strong-color: #B55A5A;
-
-  --code-font-family: "Maple Mono CN", monospace;
-  --code-background: #f5f0eb;
-  --code-inline-background: #f5f0eb;
-
-  --blockquote-border-color: #B55A5A;
-  --blockquote-color: #666;
-
-  --table-border-color: #eee;
-  --table-header-background: #faf7f3;
-
-  --search-input-background: #fff;
-  --search-input-border-color: #ddd;
-
+  /* 基础色 */
+  --color-bg: #fefcf9;
+  --color-text: #2c2c2c;
   --theme-color: #B55A5A;
+  --strong-color: var(--theme-color);
+  --link-color: var(--theme-color);
+  --heading-color: var(--theme-color);
 
-  --pagination-link-color: #B55A5A;
+  /* 字体 */
+  --font-family: "LXGW WenKai", "PingFang SC", "Microsoft YaHei", sans-serif;
+  /* 代码字体：Maple Mono CN（中文注释等宽对齐），回退到系统等宽 */
+  --font-family-mono: "Maple Mono CN", ui-monospace, "Cascadia Code", Consolas, monospace;
+  /* v5 默认 15px（v4 是 16px），恢复原有观感 */
+  --font-size: 16px;
+
+  /* 侧边栏 */
+  --sidebar-bg: #faf7f3;
+  --sidebar-border-color: rgba(181, 90, 90, 0.12);
+  --sidebar-link-color: #555;
+  --sidebar-link-color-active: #B55A5A;
+
+  /* 行内代码：对齐参考项目配色（catppuccin-latte mantle 底 + text 字色） */
+  --code-color: #4c4f69;
+  --code-bg: #e6e9ef;
+
+  /* 内容区宽度（参考项目用 75%） */
+  --content-max-width: 75%;
 
   --transition-duration: 0.3s;
+
+  /* v6 起替代 docsify topMargin 配置：锚点跳转时滚动留出的顶部空间 */
+  --scroll-padding-top: 30px;
 }
 
-/* --- 暗色模式变量 --- */
+/* --- 暗色模式 --- */
 [data-theme="dark"] {
-  --base-background-color: #353537;
-  --base-text-color: #d4d4d8;
-
-  --sidebar-background: #404042;
-  --sidebar-border-color: rgba(255, 255, 255, 0.08);
-  --sidebar-nav-link-color--active: #e8a0bf;
-  --sidebar-nav-link-color: #a1a1aa;
-
-  --heading-color: #e8a0bf;
-  --link-color: #e8a0bf;
-  --strong-color: #e8a0bf;
-
-  --code-background: #1e1e1e;
-  --code-inline-background: #1e1e1e;
-
-  --blockquote-border-color: #e8a0bf;
-  --blockquote-color: #a1a1aa;
-
-  --table-border-color: rgba(255, 255, 255, 0.1);
-  --table-header-background: #1e1e1e;
-
-  --search-input-background: #404042;
-  --search-input-border-color: rgba(255, 255, 255, 0.15);
-
+  --color-bg: #353537;
+  --color-text: #d4d4d8;
   --theme-color: #e8a0bf;
+  --color-mono-min: var(--color-bg); /* 让 mono 色阶跟随暗色底重算 */
+  --color-mono-max: var(--color-text);
+  --strong-color: var(--theme-color);
+  --link-color: var(--theme-color);
+  --heading-color: var(--theme-color);
 
-  --pagination-link-color: #e8a0bf;
+  --sidebar-bg: #404042;
+  --sidebar-border-color: rgba(255, 255, 255, 0.08);
+  --sidebar-link-color: #a1a1aa;
+  --sidebar-link-color-active: #e8a0bf;
+
+  --code-color: #cdd6f4;
+  --code-bg: #45475a;
+
+  /* v5 的代码块变量（core.min.css 用这些画代码块背景/边框） */
+  --codeblock-bg: #1e1e1e;
+  --codeblock-border-color: rgba(255, 255, 255, 0.1);
+  --codeblock-color: #d4d4d8;
 }
 
 /* --- 基础样式 --- */
 body {
-  font-family: var(--base-font-family);
-  color: var(--base-text-color);
-  font-weight: var(--base-font-weight);
-  background: var(--base-background-color);
+  font-weight: 500; /* 霞鹜文楷笔画偏细，默认 350 太淡 */
   transition: background var(--transition-duration), color var(--transition-duration);
 }
 
@@ -87,77 +78,47 @@ strong, b {
   font-weight: 800 !important;
 }
 
-code, pre {
-  font-family: var(--code-font-family);
+/* --- 行内代码（抄参考项目 bw_docsify） --- */
+/* 颜色由上方 --code-color / --code-bg 变量控制（亮色 catppuccin-latte 配色），
+   这里补字号与内边距：v5 默认 0.875rem 比正文小一号，改为随所在文字 */
+.markdown-section :not(pre) > code {
+  font-size: 1em;
+  border-radius: 4px;
+  padding: 0.15em 0.4em;
 }
 
-/* --- 引用块样式 --- */
+/* --- 引用块 --- */
 blockquote {
-  color: var(--blockquote-color);
-  border-left: 4px solid var(--blockquote-border-color);
-  padding: 8px 16px;
-  margin: 16px 0;
+  border-left: 4px solid var(--theme-color);
   background: rgba(0, 0, 0, 0.02);
-  transition: color var(--transition-duration), border-color var(--transition-duration);
 }
 
 [data-theme="dark"] blockquote {
   background: rgba(255, 255, 255, 0.03);
 }
 
+/* --- 表格 --- */
+[data-theme="dark"] table,
+[data-theme="dark"] th,
+[data-theme="dark"] td {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+[data-theme="dark"] th {
+  background: rgba(255, 255, 255, 0.04);
+}
+[data-theme="dark"] tr:nth-child(2n) {
+  background: rgba(255, 255, 255, 0.03);
+}
+[data-theme="dark"] td strong,
+[data-theme="dark"] th strong {
+  color: var(--strong-color);
+}
+
 /* --- 侧边栏 --- */
 .sidebar {
-  background: var(--sidebar-background);
+  background: var(--sidebar-bg);
   border-right: 1px solid var(--sidebar-border-color);
   transition: background var(--transition-duration), border-color var(--transition-duration);
-}
-
-.sidebar-nav li a {
-  color: var(--sidebar-nav-link-color);
-  transition: color var(--transition-duration);
-}
-
-.sidebar-nav li a:hover,
-.sidebar-nav li.active > a {
-  color: var(--sidebar-nav-link-color--active);
-  font-weight: var(--sidebar-nav-link-font-weight--active, 700);
-}
-
-.sidebar-nav .app-name {
-  color: var(--theme-color);
-  font-weight: bold;
-  transition: color var(--transition-duration);
-}
-
-/* --- 侧边栏文件/文件夹图标 --- */
-.sidebar-nav li > a::before,
-.sidebar-nav li > p::before {
-  transition: color var(--transition-duration);
-}
-
-[data-theme="dark"] .sidebar-nav li > a::before,
-[data-theme="dark"] .sidebar-nav li > p::before {
-  color: #2D2D2F;
-}
-
-[data-theme="dark"] .sidebar-nav li.folder > p::before,
-[data-theme="dark"] .sidebar-nav li.folder > a::before {
-  color: #2D2D2F;
-}
-
-/* 覆盖插件的 SVG 图标，用 CSS content 代替 */
-.sidebar-nav ul:not(.app-sub-sidebar) > li.file::before {
-  background: none !important;
-  content: "📄";
-  font-size: 12px;
-  line-height: 14px;
-}
-
-.sidebar-nav ul:not(.app-sub-sidebar) > li.folder::before {
-  background: none !important;
-  content: "📁";
-  font-size: 12px;
-  line-height: 14px;
 }
 
 /* --- Hero 区域 --- */
@@ -190,13 +151,7 @@ blockquote {
   color: #a1a1aa;
 }
 
-/* --- 文章列表卡片 --- */
-/* （.article-card 系列样式已删除：全仓库无任何页面生成该类，系旧版设计遗留死样式） */
-
-/* --- 文章分类标题 --- */
-/* （.article-folder 样式已删除：仅 update-sidebar.js 已移除的 showTime 分支会生成该类，属死样式） */
-
-/* --- 文章列表项 --- */
+/* --- 文章列表项（首页） --- */
 .article-date {
   color: #737373;
   font-size: 0.85em;
@@ -208,17 +163,10 @@ blockquote {
   color: #a1a1aa;
 }
 
-/* 首页文章列表样式 - 只作用于首页 */
-.markdown-section ul {
-  padding-left: 24px;
-}
-
 .markdown-section ul li {
   padding: 4px 0;
   line-height: 1.8;
 }
-
-/* （.article-item 系列样式已删除：仅 update-sidebar.js 已移除的 showTime 分支会生成该类，属死样式） */
 
 /* --- 联系信息 --- */
 .contact-info {
@@ -233,7 +181,12 @@ blockquote {
 }
 
 /* --- 暗色模式切换按钮 --- */
+/* v5 侧边栏内容可滚动，按钮 append 在目录列表末尾会跟着滚出视口。
+   sticky 让它始终钉在侧边栏可视区域底部 */
 .darkmode-toggle {
+  position: sticky;
+  bottom: 24px; /* 离侧栏可视底部留 24px，不贴边 */
+  z-index: 5;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -241,12 +194,13 @@ blockquote {
   margin: 20px 12px 12px;
   padding: 8px 14px;
   background: rgba(181, 90, 90, 0.08);
+  backdrop-filter: blur(4px); /* 半透明底 + 毛玻璃，压在目录上也可读 */
   border: none;
   border-radius: 20px;
   cursor: pointer;
   font-size: 13px;
-  color: var(--sidebar-nav-link-color);
-  font-family: var(--base-font-family);
+  color: var(--sidebar-link-color);
+  font-family: var(--font-family);
   transition: background 0.2s, color 0.2s;
   width: calc(100% - 24px);
 }
@@ -268,7 +222,7 @@ kbd {
   display: inline-block;
   padding: 2px 6px;
   font-size: 0.85em;
-  font-family: var(--code-font-family);
+  font-family: var(--font-family-mono);
   color: var(--theme-color);
   background: rgba(181, 90, 90, 0.08);
   border: 1px solid rgba(181, 90, 90, 0.2);
@@ -289,11 +243,12 @@ kbd {
   text-align: left;
   margin-top: 20px;
   padding: 10px;
-  border-top: 1px solid #eee;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
   transition: border-color var(--transition-duration);
 }
 
 [data-theme="dark"] .update-time {
+  color: #6b7280;
   border-top-color: rgba(255, 255, 255, 0.08);
 }
 
@@ -303,7 +258,6 @@ pre.shiki {
   border-radius: 8px;
   padding: 16px;
   overflow-x: auto;
-  font-family: var(--code-font-family);
   font-size: 14px;
   line-height: 1.6;
   transition: background var(--transition-duration);
@@ -312,6 +266,7 @@ pre.shiki {
 pre.shiki code {
   font-family: inherit;
   background: none;
+  white-space: pre !important; /* 防换行被折叠（安全网） */
 }
 
 pre.shiki .copy-btn {
@@ -333,40 +288,92 @@ pre.shiki:hover .copy-btn {
 }
 
 [data-theme="dark"] pre.shiki .copy-btn {
-  color: #aaa;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ccc;
 }
 
-/* --- 搜索框 --- */
-.search input {
-  background: var(--search-input-background) !important;
-  border: 1px solid var(--search-input-border-color) !important;
-  color: var(--base-text-color) !important;
-  transition: background var(--transition-duration), border-color var(--transition-duration), color var(--transition-duration);
+/* ==================== 顶部阅读进度条 ==================== */
+/* js/reading-progress.js 创建 .reading-progress 元素 */
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0;
+  background: linear-gradient(90deg, var(--theme-color), var(--link-color));
+  border-radius: 0 2px 2px 0;
+  z-index: 9999;
+  pointer-events: none;
+  transition: width 0.1s linear;
+  opacity: 0.9;
 }
 
-.search input::placeholder {
-  color: var(--sidebar-nav-link-color);
+/* ==================== 暗色模式全局适配 ==================== */
+
+/* --- 分隔线 --- */
+[data-theme="dark"] hr {
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
-[data-theme="dark"] .search input {
-  color: #e0e0e0 !important;
+/* --- 图片：暗色下降亮防刺眼 --- */
+[data-theme="dark"] .markdown-section img {
+  filter: brightness(0.92) contrast(1.02);
+  border-radius: 4px;
 }
 
-[data-theme="dark"] .search input::placeholder {
-  color: #e0e0e0 !important;
-  opacity: 1 !important;
+/* --- mark 高亮 --- */
+[data-theme="dark"] mark {
+  background: rgba(232, 160, 191, 0.25);
+  color: var(--color-text);
+  padding: 0 2px;
+  border-radius: 2px;
 }
 
-[data-theme="dark"] .search input::-webkit-input-placeholder {
-  color: #e0e0e0 !important;
-  opacity: 1 !important;
+/* --- 任务列表复选框 --- */
+[data-theme="dark"] .markdown-section input[type="checkbox"] {
+  accent-color: var(--theme-color);
 }
 
-.search .clear-button {
-  color: var(--base-text-color);
+/* --- 搜索结果 --- */
+[data-theme="dark"] .search .results-panel {
+  background: var(--sidebar-bg);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+[data-theme="dark"] .search .matching-post {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+[data-theme="dark"] .search .matching-post h2,
+[data-theme="dark"] .search .matching-post p {
+  color: var(--color-text);
+}
+
+/* --- 字数统计 --- */
+[data-theme="dark"] .count,
+[data-theme="dark"] span[class*="count"] {
+  color: #888;
+  opacity: 0.7;
+}
+
+/* --- 图片缩放遮罩 --- */
+[data-theme="dark"] .medium-zoom-overlay {
+  background: rgba(0, 0, 0, 0.85) !important;
+}
+
+/* --- 滚动条 ---
+   不自定义 ::-webkit-scrollbar：一旦自定义，Chrome/Edge 会放弃原生
+   overlay 滚动条（hover 才浮现）改为常驻显示，导致亮/暗行为不一致。
+   两种模式统一走浏览器原生滚动条。 */
+
+/* --- 文本选中色 --- */
+[data-theme="dark"] ::selection {
+  background: rgba(232, 160, 191, 0.3);
+  color: #fff;
 }
 
 /* --- 分页 --- */
-.pagination a {
-  color: var(--pagination-link-color);
+[data-theme="dark"] .pagination {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+[data-theme="dark"] .pagination a {
+  color: var(--theme-color);
 }

@@ -4,6 +4,7 @@
   "description": "quexing 的个人博客，基于 Docsify",
   "scripts": {
     "update": "node scripts/update-sidebar.js",
+    "sync:vault": "node scripts/sync-vault.js",
     "check": "node scripts/check-spaces.js",
     "check:links": "node scripts/check-links.js",
     "test": "node --test scripts/*.test.js",
