@@ -292,20 +292,36 @@ pre.shiki:hover .copy-btn {
   color: #ccc;
 }
 
-/* ==================== 阅读进度条（正文右侧，滚动时出现，停止后消失） ==================== */
+/* ==================== 顶部阅读进度条 ==================== */
 /* js/reading-progress.js 创建 .reading-progress 元素 */
 .reading-progress {
   position: fixed;
-  top: 84px;           /* 与目录同起始高度 */
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0;
+  background: linear-gradient(90deg, var(--theme-color), var(--link-color));
+  border-radius: 0 2px 2px 0;
+  z-index: 9999;
+  pointer-events: none;
+  transition: width 0.1s linear;
+  opacity: 0.9;
+}
+
+/* ==================== 右侧滚动进度条（正文右缘，滚动时出现，停止后消失） ==================== */
+/* js/reading-progress.js 创建 .scroll-indicator 元素 */
+.scroll-indicator {
+  position: fixed;
+  top: 84px;
   right: 0;
   width: 3px;
   height: 0;
   background: var(--theme-color);
   border-radius: 2px 0 0 2px;
-  z-index: 14;         /* 低于目录(15)和收缩键(16)，高于正文 */
+  z-index: 14;
   pointer-events: none;
   transition: height 0.08s linear, opacity 0.4s ease;
-  opacity: 0;          /* 默认隐藏，滚动时由 JS 设为 0.6 */
+  opacity: 0;
 }
 
 /* ==================== 暗色模式全局适配 ==================== */
