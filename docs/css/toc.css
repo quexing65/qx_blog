@@ -119,6 +119,7 @@ body.toc-open .page-toc-list {
   overscroll-behavior: contain;
   scrollbar-width: none;
   opacity: 1;
+  border-left: 1px solid var(--sidebar-border-color);
 }
 .page-toc-list::-webkit-scrollbar {
   display: none;
