@@ -45,7 +45,7 @@ body.toc-open .content {
   font-size: 12.5px;
   line-height: 1.5;
 }
-/* 标题按钮（始终可见） */
+/* 标题按钮（始终可见，收起时与手机FAB完全一致） */
 .page-toc-title {
   display: flex;
   align-items: center;
@@ -59,19 +59,19 @@ body.toc-open .content {
   color: #fff;
   font-family: inherit;
   font-size: 14px;
-  letter-spacing: 2px;
+  letter-spacing: normal;
   cursor: pointer;
-  transition: width 0.3s ease, border-radius 0.3s ease, font-size 0.3s ease, letter-spacing 0.3s ease, box-shadow 0.2s;
+  transition: width 0.3s ease, border-radius 0.3s ease, padding 0.3s ease, box-shadow 0.2s;
   user-select: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
   white-space: nowrap;
-  /* 收起时：内容撑开宽度（约70px的小胶囊） */
-  width: auto;
+  /* 收起时：64px宽（与手机FAB完全一致） */
+  width: 64px;
 }
 .page-toc-title:hover {
   opacity: 0.85;
 }
-/* 展开时：按钮变宽，加圆角变方 */
+/* 展开时：变宽为面板标题 */
 body.toc-open .page-toc-title {
   width: 220px;
   border-radius: 12px 12px 0 0;
