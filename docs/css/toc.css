@@ -1,10 +1,16 @@
 /* ============================================================
-   右侧目录（方案B：独立右栏 + 收缩键）—— 结构由 js/toc.js 生成：
-   <body class="toc-open">            展开状态类（收缩键切换 + localStorage 记忆）
-   <nav class="page-toc">             目录面板（fixed 右栏）
+   右侧目录（方案B：独立右栏 + 收缩键；手机端底部弹出面板）
+   结构由 js/toc.js 生成：
+   <body class="toc-open">            桌面展开状态类（收缩键切换 + localStorage 记忆）
+   <nav class="page-toc">             桌面目录面板（fixed 右栏，≥1280px 显示）
      <div class="page-toc-title">目录</div>
      <div class="page-toc-list">…button.page-toc-item…</div>
-   <button class="toc-toggle">›/‹</button>   右缘收缩键（fixed）
+   <button class="toc-toggle">›/‹</button>   桌面右缘收缩键（fixed）
+   <button class="toc-fab">目录</button>     手机右下角按钮（<1280px 显示）
+   <div class="toc-sheet-backdrop">          手机面板遮罩
+   <div class="toc-sheet">                   手机底部弹出面板
+     <div class="toc-sheet-head">目录 + ✕</div>
+     <div class="toc-sheet-list">…button.toc-sheet-item…</div>
 
    布局原理：展开时 body.toc-open 给 .content 加右侧 padding，
    正文（.markdown-section，宽 75% 居中）自动变窄让位；收起时
@@ -132,13 +138,153 @@ body > button.toc-toggle:hover {
   outline-color: transparent;
 }
 
-/* ---------- 窄屏：目录与收缩键整体隐藏，正文不让位 ---------- */
+/* ---------- 手机：右下角"目录"按钮 + 底部弹出面板（<1280px 生效） ----------
+   桌面（≥1280px）一律 display:none，不参与桌面布局 */
+body > button.toc-fab,
+.toc-sheet,
+.toc-sheet-backdrop {
+  display: none;
+}
+
 @media (max-width: 1279px) {
+  /* --- 桌面目录让位 --- */
   .page-toc,
   body > button.toc-toggle {
     display: none;
   }
   body.toc-open .content {
     padding-right: 0;
+  }
+
+  /* --- 右下角"目录"按钮 --- */
+  body > button.toc-fab {
+    display: flex;
+    align-items: center;
+    position: fixed;
+    right: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom)); /* 避开 iPhone 底部横条 */
+    height: 40px;
+    padding: 0 18px;
+    margin: 0;
+    border: none;
+    border-radius: 20px;
+    background: var(--theme-color);
+    color: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 53; /* 低于遮罩(54)/面板(55)/侧栏抽屉(60)，面板打开时被遮罩盖住 */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.28);
+    transition: transform 0.15s;
+  }
+  body > button.toc-fab:active {
+    transform: scale(0.95);
+  }
+  body > button.toc-fab[hidden] {
+    display: none; /* 须显式压过上面的 display:flex，hidden 属性才能生效 */
+  }
+
+  /* --- 遮罩 --- */
+  .toc-sheet-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 54;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0s 0.25s;
+  }
+  .toc-sheet-backdrop.show {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.25s ease;
+  }
+
+  /* --- 底部面板 --- */
+  .toc-sheet {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-height: 65vh;
+    background: var(--sidebar-bg);
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(100%);
+    visibility: hidden;
+    transition: transform 0.25s ease, visibility 0s 0.25s;
+    z-index: 55;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .toc-sheet.open {
+    transform: none;
+    visibility: visible;
+    transition: transform 0.25s ease;
+  }
+  .toc-sheet-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px 8px;
+    flex: none;
+  }
+  .toc-sheet-title {
+    font-size: 14px;
+    letter-spacing: 4px;
+    color: var(--sidebar-link-color);
+  }
+  .toc-sheet .toc-sheet-close {
+    margin: 0;
+    padding: 4px 10px;
+    border: none;
+    box-shadow: none;
+    background: none;
+    font-family: inherit;
+    font-size: 16px;
+    color: var(--sidebar-link-color);
+    cursor: pointer;
+  }
+  .toc-sheet-list {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 4px 0 12px;
+  }
+  .toc-sheet .toc-sheet-item {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 11px 16px 11px 18px;
+    border: none;
+    border-left: 2px solid transparent;
+    box-shadow: none;
+    background: none;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--color-text);
+    cursor: pointer;
+  }
+  .toc-sheet .toc-sheet-item.active {
+    color: var(--theme-color);
+    border-left-color: var(--theme-color);
+  }
+  .toc-sheet .toc-sheet-item.level-h3 {
+    padding-left: 30px;
+  }
+  .toc-sheet .toc-sheet-item.level-h4 {
+    padding-left: 42px;
+  }
+
+  /* 面板打开时锁住背景滚动 */
+  body.toc-sheet-open {
+    overflow: hidden;
   }
 }
