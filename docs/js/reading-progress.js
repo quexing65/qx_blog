@@ -1,29 +1,44 @@
 /**
- * 顶部阅读进度条
- * - 固定在视口顶部，宽度随当前页面滚动进度增长
+ * 阅读进度条（正文右侧竖条，滚动时出现，停止滚动 1.2 秒后自动消失）
+ * - 位于正文右侧边缘（right:0），从上往下随滚动进度增长
+ * - 默认隐藏（opacity 0）；滚动时淡入（opacity 0.6），
+ *   停止滚动 1.2 秒后自动淡出（opacity 0）
  * - 亮/暗色自动跟随主题（颜色用 CSS 变量 --theme-color，见 theme.css）
- * - 路由切换后自动归零重算（docsify 切页会滚动到顶部，触发 scroll 事件）
+ * - 路由切换后自动归零重算
  */
 (function () {
   "use strict";
 
-  const bar = document.createElement("div");
+  var bar = document.createElement("div");
   bar.className = "reading-progress";
   bar.setAttribute("aria-hidden", "true");
   document.body.appendChild(bar);
 
+  var hideTimer = null;
+  var HIDE_DELAY = 1200; // 停止滚动后多久淡出（ms）
+
   function update() {
-    const el = document.documentElement;
-    // 可滚动总高度 = 文档高度 - 视口高度；不可滚动时进度为 0（如首页过短）
-    const scrollable = el.scrollHeight - el.clientHeight;
-    const pct = scrollable > 0 ? Math.min(100, (el.scrollTop / scrollable) * 100) : 0;
-    bar.style.width = pct + "%";
+    var el = document.documentElement;
+    var scrollable = el.scrollHeight - el.clientHeight;
+    var pct = scrollable > 0 ? Math.min(100, (el.scrollTop / scrollable) * 100) : 0;
+    // 竖条：高度 = 视口高度 × 进度百分比
+    bar.style.height = (pct * el.clientHeight / 100) + "px";
   }
 
-  // passive 提升滚动性能；update 本身只改一个 style，开销可忽略
-  window.addEventListener("scroll", update, { passive: true });
+  function show() {
+    bar.style.opacity = "0.6";
+    if (hideTimer) clearTimeout(hideTimer);
+    hideTimer = setTimeout(function () {
+      bar.style.opacity = "0";
+      hideTimer = null;
+    }, HIDE_DELAY);
+  }
+
+  window.addEventListener("scroll", function () {
+    update();
+    show();
+  }, { passive: true });
   window.addEventListener("resize", update);
 
-  // 初始 + 路由切换后重算（保险起见用 rAF 兜底一帧）
   requestAnimationFrame(update);
 })();
