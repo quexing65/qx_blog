@@ -145,31 +145,53 @@
     var heads = main ? main.querySelectorAll("h2, h3, h4") : [];
     if (heads.length < MIN_HEADINGS) return hide();
 
-    // ---- 桌面：目录面板（标题即切换按钮） ----
+    // ---- 桌面：目录面板（小胶囊+大胶囊中心对称） ----
     if (!box) {
       box = document.createElement("nav");
       box.className = "page-toc";
       box.setAttribute("aria-label", "本文目录");
 
+      // 小胶囊（收起时显示）
       var title = document.createElement("div");
       title.className = "page-toc-title";
       title.textContent = "目录";
       title.setAttribute("role", "button");
       title.setAttribute("tabindex", "0");
       title.addEventListener("click", function () {
-        open = !open;
+        open = true;
         saveOpen(open);
         applyOpen();
       });
       title.addEventListener("keydown", function (e) {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          open = !open;
+          open = true;
           saveOpen(open);
           applyOpen();
         }
       });
       box.appendChild(title);
+
+      // 大胶囊（展开时显示）
+      var toggle = document.createElement("div");
+      toggle.className = "page-toc-toggle";
+      toggle.textContent = "收起目录";
+      toggle.setAttribute("role", "button");
+      toggle.setAttribute("tabindex", "0");
+      toggle.addEventListener("click", function () {
+        open = false;
+        saveOpen(open);
+        applyOpen();
+      });
+      toggle.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          open = false;
+          saveOpen(open);
+          applyOpen();
+        }
+      });
+      box.appendChild(toggle);
 
       var list = document.createElement("div");
       list.className = "page-toc-list";
