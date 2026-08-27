@@ -23,8 +23,7 @@
    胶囊按钮——目录项用三层 class，收缩键用 body > button.toc-toggle。
    ============================================================ */
 :root {
-  --toc-width: 180px; /* 目录栏宽度（缩窄，只放标题+列表） */
-  --toc-indent: calc(var(--toc-width) + 40px); /* 正文让位 = 目录宽 + 间距 */
+  --toc-indent: 220px; /* 正文让位 = 展开面板180px + 间距40px */
 }
 
 /* ---------- 正文让位（展开时） ---------- */
@@ -37,50 +36,67 @@ body.toc-open .content {
     padding-right var(--duration-medium, 250ms) ease;
 }
 
-/* ---------- 目录面板 ---------- */
+/* ---------- 目录面板（收起时=小按钮，展开时=面板） ---------- */
 .page-toc {
   position: fixed;
   top: 84px;
   right: 24px;
-  width: var(--toc-width);
   z-index: 15;
   font-size: 12.5px;
   line-height: 1.5;
-  transition: opacity 0.25s ease, translate 0.25s ease, visibility 0s;
 }
-/* 收起：只隐藏列表，标题按钮始终可见（供用户点击展开） */
-body:not(.toc-open) .page-toc-list {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-  max-height: 0;
-  overflow: hidden;
-  transition: opacity 0.25s ease, visibility 0s 0.25s, max-height 0.25s ease;
-}
-body.toc-open .page-toc-list {
-  opacity: 1;
-  visibility: visible;
-  max-height: calc(100vh - 160px);
-  transition: opacity 0.25s ease, max-height 0.25s ease;
-}
-/* 目录标题 = 圆角按钮（点击切换展开/收起） */
+/* 标题按钮（始终可见） */
 .page-toc-title {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 6px;
-  padding: 6px 0;
-  font-size: 12px;
-  letter-spacing: 4px;
-  color: #fff;
+  height: 40px;
+  padding: 0 18px;
+  margin: 0;
+  border: none;
+  border-radius: 20px;
   background: var(--theme-color);
-  border-radius: 16px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  letter-spacing: 2px;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: width 0.3s ease, border-radius 0.3s ease, font-size 0.3s ease, letter-spacing 0.3s ease, box-shadow 0.2s;
   user-select: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  white-space: nowrap;
+  /* 收起时：内容撑开宽度（约70px的小胶囊） */
+  width: auto;
 }
 .page-toc-title:hover {
   opacity: 0.85;
+}
+/* 展开时：按钮变宽，加圆角变方 */
+body.toc-open .page-toc-title {
+  width: 180px;
+  border-radius: 12px 12px 0 0;
+  letter-spacing: 4px;
+  font-size: 12px;
+  justify-content: center;
+}
+/* 列表（收起时隐藏，展开时显示） */
+.page-toc-list {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.3s ease, opacity 0.25s ease;
+}
+body.toc-open .page-toc-list {
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  opacity: 1;
+  background: var(--sidebar-bg);
+  border-radius: 0 0 12px 12px;
+}
+.page-toc-list::-webkit-scrollbar {
+  display: none;
 }
 .page-toc-list {
   max-height: calc(100vh - 160px);
