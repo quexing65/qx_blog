@@ -1,44 +1,64 @@
 /**
- * 阅读进度条（正文右侧竖条，滚动时出现，停止滚动 1.2 秒后自动消失）
- * - 位于正文右侧边缘（right:0），从上往下随滚动进度增长
- * - 默认隐藏（opacity 0）；滚动时淡入（opacity 0.6），
- *   停止滚动 1.2 秒后自动淡出（opacity 0）
- * - 亮/暗色自动跟随主题（颜色用 CSS 变量 --theme-color，见 theme.css）
- * - 路由切换后自动归零重算
+ * 阅读进度条（两套，均由本脚本创建）
+ * 1. 顶部常驻横条（.reading-progress）：始终可见，宽度随滚动进度增长
+ * 2. 右侧滚动竖条（.scroll-indicator）：默认隐藏，滚动时淡入，
+ *    停止滚动 1.2 秒后自动淡出
  */
 (function () {
   "use strict";
 
-  var bar = document.createElement("div");
-  bar.className = "reading-progress";
-  bar.setAttribute("aria-hidden", "true");
-  document.body.appendChild(bar);
+  /* ---- 顶部常驻横条 ---- */
+  var topBar = document.createElement("div");
+  topBar.className = "reading-progress";
+  topBar.setAttribute("aria-hidden", "true");
+  document.body.appendChild(topBar);
 
-  var hideTimer = null;
-  var HIDE_DELAY = 1200; // 停止滚动后多久淡出（ms）
-
-  function update() {
+  function updateTop() {
     var el = document.documentElement;
     var scrollable = el.scrollHeight - el.clientHeight;
     var pct = scrollable > 0 ? Math.min(100, (el.scrollTop / scrollable) * 100) : 0;
-    // 竖条：高度 = 视口高度 × 进度百分比
-    bar.style.height = (pct * el.clientHeight / 100) + "px";
+    topBar.style.width = pct + "%";
   }
 
-  function show() {
-    bar.style.opacity = "0.6";
+  /* ---- 右侧滚动竖条 ---- */
+  var sideBar = document.createElement("div");
+  sideBar.className = "scroll-indicator";
+  sideBar.setAttribute("aria-hidden", "true");
+  document.body.appendChild(sideBar);
+
+  var hideTimer = null;
+  var HIDE_DELAY = 1200;
+
+  function updateSide() {
+    var el = document.documentElement;
+    var scrollable = el.scrollHeight - el.clientHeight;
+    var pct = scrollable > 0 ? Math.min(100, (el.scrollTop / scrollable) * 100) : 0;
+    sideBar.style.height = (pct * el.clientHeight / 100) + "px";
+  }
+
+  function showSide() {
+    sideBar.style.opacity = "0.6";
     if (hideTimer) clearTimeout(hideTimer);
     hideTimer = setTimeout(function () {
-      bar.style.opacity = "0";
+      sideBar.style.opacity = "0";
       hideTimer = null;
     }, HIDE_DELAY);
   }
 
+  /* ---- 统一事件 ---- */
   window.addEventListener("scroll", function () {
-    update();
-    show();
+    updateTop();
+    updateSide();
+    showSide();
   }, { passive: true });
-  window.addEventListener("resize", update);
 
-  requestAnimationFrame(update);
+  window.addEventListener("resize", function () {
+    updateTop();
+    updateSide();
+  });
+
+  requestAnimationFrame(function () {
+    updateTop();
+    updateSide();
+  });
 })();
