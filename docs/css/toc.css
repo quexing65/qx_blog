@@ -49,7 +49,7 @@ body.toc-open .content {
   align-items: center;
   width: 140px; /* 大胶囊宽度，保证两个胶囊中心对称 */
 }
-/* 小胶囊（收起时显示） */
+/* 小胶囊（收起时显示，展开时缩小消失） */
 .page-toc-title {
   display: flex;
   align-items: center;
@@ -65,18 +65,25 @@ body.toc-open .content {
   font-size: 14px;
   letter-spacing: normal;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.15s;
   user-select: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
   white-space: nowrap;
   width: 64px;
   flex-shrink: 0;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  transform: scale(1);
+  opacity: 1;
 }
 .page-toc-title:hover { opacity: 0.85; }
 .page-toc-title:active { transform: scale(0.95); }
-/* 大胶囊（展开时替换小胶囊，居中在分隔线和正文之间） */
+body.toc-open .page-toc-title {
+  transform: scale(0);
+  opacity: 0;
+  pointer-events: none;
+}
+/* 大胶囊（收起时缩小隐藏，展开时放大显示） */
 .page-toc-toggle {
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
   height: 40px;
@@ -90,7 +97,6 @@ body.toc-open .content {
   font-size: 14px;
   letter-spacing: normal;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.15s;
   user-select: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
   white-space: nowrap;
@@ -98,12 +104,19 @@ body.toc-open .content {
   flex-shrink: 0;
   position: fixed;
   top: 84px;
-  right: 50px; /* 居中在分隔线和最右边之间 */
+  right: 50px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  transform: scale(0);
+  opacity: 0;
+  pointer-events: none;
+}
+body.toc-open .page-toc-toggle {
+  transform: scale(1);
+  opacity: 1;
+  pointer-events: auto;
 }
 .page-toc-toggle:hover { opacity: 0.85; }
-.page-toc-toggle:active { transform: translateX(-50%) scale(0.95); }
-body.toc-open .page-toc-title { display: none; }
-body.toc-open .page-toc-toggle { display: flex; }
+.page-toc-toggle:active { transform: scale(0.95); }
 /* 列表（收起时隐藏，展开时贴右边） */
 .page-toc-list {
   position: fixed;
