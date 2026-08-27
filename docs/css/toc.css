@@ -260,6 +260,10 @@ body > button.toc-fab,
     overflow-y: auto;
     overscroll-behavior: contain;
     padding: 4px 0 12px;
+    scrollbar-width: none;
+  }
+  .toc-sheet-list::-webkit-scrollbar {
+    display: none;
   }
   .toc-sheet .toc-sheet-item {
     display: block;
