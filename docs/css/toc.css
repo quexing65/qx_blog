@@ -98,7 +98,7 @@ body.toc-open .content {
   flex-shrink: 0;
   position: fixed;
   top: 84px;
-  right: 265px; /* 居中在正文和分隔线之间 */
+  right: 50px; /* 居中在分隔线和最右边之间 */
 }
 .page-toc-toggle:hover { opacity: 0.85; }
 .page-toc-toggle:active { transform: translateX(-50%) scale(0.95); }
