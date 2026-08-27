@@ -153,6 +153,13 @@ body > button.toc-fab,
   .scroll-indicator {
     display: none;
   }
+  /* 隐藏浏览器自带滚动条（手机上仍可滑动，只是不显示滚动条） */
+  html {
+    scrollbar-width: none;
+  }
+  html::-webkit-scrollbar {
+    display: none;
+  }
   body.toc-open .content {
     padding-right: 0;
   }
