@@ -110,32 +110,34 @@ body:not(.toc-open) .page-toc {
   padding-left: 34px;
 }
 
-/* ---------- 右缘收缩键（贴右缘垂直居中，观感对齐左侧 docsify 侧栏开关） ---------- */
+/* ---------- 桌面：目录收缩按钮（右上角圆角按钮，与手机 FAB 风格一致） ---------- */
 body > button.toc-toggle {
   position: fixed;
-  top: 50%;
-  right: 0;
-  translate: 0 -50%;
-  width: 22px;
-  height: 80px;
+  top: 84px;
+  right: 24px;
+  height: 36px;
+  padding: 0 18px;
   margin: 0;
-  padding: 0;
   border: none;
-  border-radius: var(--border-radius, 3px) 0 0 var(--border-radius, 3px);
-  box-shadow: none;
-  background: var(--sidebar-toggle-bg, #ddd);
-  color: var(--sidebar-toggle-color, #999);
+  border-radius: 18px;
+  background: var(--theme-color);
+  color: #fff;
   font-family: inherit;
-  font-size: 18px;
+  font-size: 13px;
   line-height: 1;
   cursor: pointer;
   z-index: 16;
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
 }
 body > button.toc-toggle:hover {
-  background: var(--theme-color); /* 与左侧 docsify 侧栏开关的 hover 一致 */
+  background: var(--theme-color);
   color: #fff;
+  opacity: 0.85;
   outline-color: transparent;
+}
+body > button.toc-toggle:active {
+  transform: scale(0.95);
 }
 
 /* ---------- 手机：右下角"目录"按钮 + 底部弹出面板（<1280px 生效） ----------
