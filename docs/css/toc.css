@@ -40,7 +40,7 @@ body.toc-open .content {
 .page-toc {
   position: fixed;
   top: 84px;
-  right: 20px;
+  right: 40px; /* 与大胶囊中心对齐（大胶囊right:50px+60px中心=110px，容器right:40px+70px中心=110px） */
   z-index: 15;
   font-size: 12.5px;
   line-height: 1.5;
