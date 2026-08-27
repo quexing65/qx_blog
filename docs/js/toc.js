@@ -53,7 +53,7 @@
   function applyOpen() {
     document.body.classList.toggle("toc-open", open);
     if (toggle) {
-      toggle.textContent = open ? "›" : "‹";
+      toggle.textContent = open ? "收起" : "目录";
       toggle.title = open ? "收起目录" : "展开目录";
       toggle.setAttribute("aria-label", toggle.title);
       toggle.setAttribute("aria-expanded", open ? "true" : "false");
