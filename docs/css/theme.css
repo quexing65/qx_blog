@@ -377,9 +377,10 @@ pre.shiki:hover .copy-btn {
 }
 
 /* --- 滚动条 ---
-   不自定义 ::-webkit-scrollbar：一旦自定义，Chrome/Edge 会放弃原生
-   overlay 滚动条（hover 才浮现）改为常驻显示，导致亮/暗行为不一致。
-   两种模式统一走浏览器原生滚动条。 */
+   浏览器自带滚动条已在 toc.css 全站隐藏（html { scrollbar-width: none }
+   及 html::-webkit-scrollbar），仍可滚轮/触摸滚动；此处不再自定义
+   ::-webkit-scrollbar 颜色——一旦自定义，Chrome/Edge 会放弃原生 overlay
+   滚动条行为，导致亮/暗模式观感不一致。 */
 
 /* --- 文本选中色 --- */
 [data-theme="dark"] ::selection {

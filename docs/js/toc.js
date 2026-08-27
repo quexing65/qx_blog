@@ -7,20 +7,20 @@
  *   窄屏（<1280px）：目录不占位；右下角浮动"目录"按钮，点开底部弹出面板，
  *                   点标题项关闭面板并跳转（点遮罩 / ✕ / Esc 同样关闭）
  * - 点击目录项平滑滚动到对应标题；滚动时高亮"当前正在读"的小节
- * - 标题少于 3 个的页面不显示任何目录 UI（首页因此自动跳过）
+ * - 除首页外所有页面都显示目录（标题为 0 个时列表为空，仅保留胶囊按钮）
  * - 注册方式：docsify 到 DOMContentLoaded 才读取 window.$docsify 初始化，
  *   本脚本在 body 末尾同步执行、先于该时机，因此可直接 push 进 plugins
  */
 (function () {
   "use strict";
 
-  var MIN_HEADINGS = 3; // 标题数不足则不显示目录
   var SCROLL_OFFSET = 40; // 点击跳转时标题距视口顶部的留白（px）
   var SPY_LINE = 120; // 标题顶部越过这条线（距视口顶 px）即视为"正在读"
   var STORAGE_KEY = "qx-toc-open"; // 桌面收缩状态持久化键，默认展开
   var DESKTOP_MIN = 1280; // 桌面右栏的最小视口宽度，须与 toc.css 媒体查询一致
 
   var box = null; // 桌面目录面板 <nav>（标题即切换按钮）
+  var list = null; // 桌面目录列表 <div>（模块级，跨页复用）
   var fab = null; // 手机右下角"目录"按钮 <button>
   var sheet = null; // 手机底部弹出面板 <div>
   var backdrop = null; // 面板后的半透明遮罩 <div>
@@ -31,6 +31,9 @@
   var items = []; // { el: 正文标题元素, link: 桌面目录项, sheetLink: 手机面板项 }
   var open = readOpen();
   var ticking = false;
+  var lockIdx = -1; // 点击目录项后锁定高亮的目标下标，-1 表示未锁定
+  var lockTimer = null; // 锁定的兜底解锁计时器
+  var LOCK_TIMEOUT = 5000; // 锁定最长持续时间（ms），超时恢复滚动判定
 
   function readOpen() {
     try {
@@ -70,7 +73,7 @@
 
   function highlight() {
     if (!items.length || !box) return;
-    var idx = activeIndex();
+    var idx = lockIdx >= 0 ? lockIdx : activeIndex();
     var list = box.querySelector(".page-toc-list");
     for (var i = 0; i < items.length; i++) {
       items[i].link.classList.toggle("active", i === idx);
@@ -95,6 +98,37 @@
       highlight();
     });
   }
+
+  // 点击目录项后锁定高亮：平滑滚动途中及落点处邻近标题越线都不会抢走高亮。
+  // 平滑滚动只触发 scroll 事件，不触发 wheel/touchstart/滚动键，
+  // 因此这些信号一旦出现即可认定是用户主动滚动，解除锁定恢复判定。
+  function lockSpy(i) {
+    lockIdx = i;
+    if (lockTimer) clearTimeout(lockTimer);
+    lockTimer = setTimeout(unlockSpy, LOCK_TIMEOUT);
+    highlight();
+  }
+
+  function unlockSpy() {
+    if (lockIdx < 0) return;
+    lockIdx = -1;
+    if (lockTimer) { clearTimeout(lockTimer); lockTimer = null; }
+    highlight();
+  }
+
+  window.addEventListener("wheel", function (e) {
+    // 滚动目录列表本身（浏览目录）不算滚动页面，不解锁
+    if (e.target.closest && e.target.closest(".page-toc-list")) return;
+    unlockSpy();
+  }, { passive: true });
+  window.addEventListener("touchstart", unlockSpy, { passive: true });
+  window.addEventListener("keydown", function (e) {
+    var t = e.target;
+    if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+    if ([" ", "ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End"].indexOf(e.key) >= 0) {
+      unlockSpy();
+    }
+  });
 
   /* ============ 手机：底部弹出面板 ============ */
 
@@ -130,20 +164,27 @@
     if (e.key === "Escape") sheetClose();
   });
 
-  function hide() {
+  // 首页不显示目录：隐藏已构建的界面（inline display:none 能压过
+  // CSS 里的 display:flex；hidden 属性做不到，勿改回）
+  function hideForHome() {
     items = [];
-    if (box) box.hidden = true;
-    if (fab) fab.hidden = true;
+    if (box) box.style.display = "none";
+    if (fab) fab.style.display = "none";
     sheetClose();
     document.body.classList.remove("toc-open");
   }
 
   // 初次加载、切换文章、搜索跳转后都会触发，每次全量重建
-  function build() {
+  function build(vm) {
     sheetClose();
+    lockIdx = -1; // 上一页的锁定随旧目录项一起作废
+    if (lockTimer) { clearTimeout(lockTimer); lockTimer = null; }
+    if (vm && vm.route && vm.route.path === "/") return hideForHome();
+
+    if (box) box.style.display = "";
+    if (fab) fab.style.display = "";
     var main = document.querySelector(".markdown-section");
     var heads = main ? main.querySelectorAll("h2, h3, h4") : [];
-    if (heads.length < MIN_HEADINGS) return hide();
 
     // ---- 桌面：目录面板（小胶囊+大胶囊中心对称） ----
     if (!box) {
@@ -193,13 +234,13 @@
       });
       box.appendChild(toggle);
 
-      var list = document.createElement("div");
+      list = document.createElement("div");
       list.className = "page-toc-list";
       box.appendChild(list);
 
       document.body.appendChild(box);
     }
-    box.hidden = false;
+    list.innerHTML = ""; // 清掉上一页残留的目录项
 
     // ---- 手机：右下角按钮 + 底部面板 + 遮罩 ----
     if (!fab) {
@@ -264,13 +305,13 @@
 
       document.body.appendChild(sheet);
     }
-    fab.hidden = false;
     sheetList.innerHTML = "";
 
     // ---- 同一份数据生成两份目录项 ----
     items = [];
-    heads.forEach(function (h) {
+    heads.forEach(function (h, i) {
       var jump = function () {
+        lockSpy(i); // 先锁定：滚动途中弯钩不漂移，落点处邻近标题也抢不走
         var top = h.getBoundingClientRect().top + window.scrollY - SCROLL_OFFSET;
         window.scrollTo({ top: top, behavior: "smooth" });
       };
@@ -304,8 +345,10 @@
   window.addEventListener("scroll", onScroll, { passive: true });
 
   if (window.$docsify && Array.isArray(window.$docsify.plugins)) {
-    window.$docsify.plugins.push(function (hook) {
-      hook.doneEach(build);
+    window.$docsify.plugins.push(function (hook, vm) {
+      hook.doneEach(function () {
+        build(vm); // 传入 vm 以识别首页路由
+      });
     });
   }
 })();
