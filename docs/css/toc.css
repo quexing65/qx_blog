@@ -23,7 +23,7 @@
    胶囊按钮——目录项用三层 class，收缩键用 body > button.toc-toggle。
    ============================================================ */
 :root {
-  --toc-indent: 220px; /* 正文让位 = 展开面板180px + 间距40px */
+  --toc-indent: 260px; /* 正文让位 = 展开面板220px + 间距40px */
 }
 
 /* ---------- 正文让位（展开时） ---------- */
@@ -73,7 +73,7 @@ body.toc-open .content {
 }
 /* 展开时：按钮变宽，加圆角变方 */
 body.toc-open .page-toc-title {
-  width: 180px;
+  width: 220px;
   border-radius: 12px 12px 0 0;
   letter-spacing: 4px;
   font-size: 12px;
