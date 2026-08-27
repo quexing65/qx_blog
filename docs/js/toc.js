@@ -20,8 +20,7 @@
   var STORAGE_KEY = "qx-toc-open"; // 桌面收缩状态持久化键，默认展开
   var DESKTOP_MIN = 1280; // 桌面右栏的最小视口宽度，须与 toc.css 媒体查询一致
 
-  var box = null; // 桌面目录面板 <nav>
-  var toggle = null; // 桌面右缘收缩键 <button>
+  var box = null; // 桌面目录面板 <nav>（标题即切换按钮）
   var fab = null; // 手机右下角"目录"按钮 <button>
   var sheet = null; // 手机底部弹出面板 <div>
   var backdrop = null; // 面板后的半透明遮罩 <div>
@@ -52,13 +51,6 @@
   // 把桌面展开/收起状态落到 DOM：body 类控制正文让位与目录显隐（过渡见 toc.css）
   function applyOpen() {
     document.body.classList.toggle("toc-open", open);
-    if (toggle) {
-      toggle.textContent = open ? "收起" : "目录";
-      toggle.title = open ? "收起目录" : "展开目录";
-      toggle.setAttribute("aria-label", toggle.title);
-      toggle.setAttribute("aria-expanded", open ? "true" : "false");
-    }
-    // 正文宽度变化的过渡动画约 250ms，结束后重算高亮
     requestAnimationFrame(highlight);
     setTimeout(highlight, 300);
   }
@@ -141,50 +133,51 @@
   function hide() {
     items = [];
     if (box) box.hidden = true;
-    if (toggle) toggle.hidden = true;
     if (fab) fab.hidden = true;
-    sheetClose(); // 切到短文章时收起可能开着的面板
-    // 没有目录就不让位，正文恢复全宽
+    sheetClose();
     document.body.classList.remove("toc-open");
   }
 
   // 初次加载、切换文章、搜索跳转后都会触发，每次全量重建
   function build() {
-    sheetClose(); // 切页时收起面板，避免面板里还是上一篇文章的目录
+    sheetClose();
     var main = document.querySelector(".markdown-section");
     var heads = main ? main.querySelectorAll("h2, h3, h4") : [];
     if (heads.length < MIN_HEADINGS) return hide();
 
-    // ---- 桌面：目录面板 + 右缘收缩键 ----
+    // ---- 桌面：目录面板（标题即切换按钮） ----
     if (!box) {
       box = document.createElement("nav");
       box.className = "page-toc";
       box.setAttribute("aria-label", "本文目录");
-      document.body.appendChild(box);
-    }
-    if (!toggle) {
-      toggle = document.createElement("button");
-      toggle.type = "button";
-      toggle.className = "toc-toggle";
-      toggle.addEventListener("click", function () {
+
+      var title = document.createElement("div");
+      title.className = "page-toc-title";
+      title.textContent = "目录";
+      title.setAttribute("role", "button");
+      title.setAttribute("tabindex", "0");
+      title.addEventListener("click", function () {
         open = !open;
         saveOpen(open);
         applyOpen();
       });
-      document.body.appendChild(toggle);
+      title.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          open = !open;
+          saveOpen(open);
+          applyOpen();
+        }
+      });
+      box.appendChild(title);
+
+      var list = document.createElement("div");
+      list.className = "page-toc-list";
+      box.appendChild(list);
+
+      document.body.appendChild(box);
     }
     box.hidden = false;
-    toggle.hidden = false;
-    box.innerHTML = "";
-
-    var title = document.createElement("div");
-    title.className = "page-toc-title";
-    title.textContent = "目录";
-    box.appendChild(title);
-
-    var list = document.createElement("div");
-    list.className = "page-toc-list";
-    box.appendChild(list);
 
     // ---- 手机：右下角按钮 + 底部面板 + 遮罩 ----
     if (!fab) {
