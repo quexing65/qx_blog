@@ -101,7 +101,7 @@ body.toc-open .content {
 .page-toc-toggle:active { transform: scale(0.95); }
 body.toc-open .page-toc-title { display: none; }
 body.toc-open .page-toc-toggle { display: flex; }
-/* 列表（收起时隐藏，展开时直接贴右边，不要背景框） */
+/* 列表（收起时隐藏，展开时贴右边） */
 .page-toc-list {
   position: fixed;
   top: 132px;
@@ -109,7 +109,8 @@ body.toc-open .page-toc-toggle { display: flex; }
   max-height: 0;
   overflow: hidden;
   opacity: 0;
-  width: 100vw;
+  width: 220px;
+  text-align: left;
   transition: max-height 0.3s ease, opacity 0.25s ease;
 }
 body.toc-open .page-toc-list {
@@ -134,7 +135,7 @@ body.toc-open .page-toc-list {
 .page-toc .page-toc-list .page-toc-item {
   display: block;
   width: 100%;
-  margin: 0; /* 中和 core 主题 button[type] 的 margin-block 和相邻按钮 margin-left */
+  margin: 0;
   padding: 4px 0 4px 10px;
   border: none;
   border-left: 2px solid transparent;
@@ -153,7 +154,7 @@ body.toc-open .page-toc-list {
 }
 .page-toc .page-toc-list .page-toc-item:hover {
   color: var(--theme-color);
-  outline-color: transparent; /* 中和 core 主题按钮的 hover 外框 */
+  outline-color: transparent;
 }
 .page-toc .page-toc-list .page-toc-item.active {
   color: var(--theme-color);
