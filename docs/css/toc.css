@@ -146,18 +146,19 @@ body > button.toc-fab,
   display: none;
 }
 
+/* --- 全站隐藏浏览器自带滚动条（仍可滑动，只是不显示滚动条） --- */
+html {
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar {
+  display: none;
+}
+
 @media (max-width: 1279px) {
   /* --- 桌面目录让位 + 右侧滚动条隐藏 --- */
   .page-toc,
   body > button.toc-toggle,
   .scroll-indicator {
-    display: none;
-  }
-  /* 隐藏浏览器自带滚动条（手机上仍可滑动，只是不显示滚动条） */
-  html {
-    scrollbar-width: none;
-  }
-  html::-webkit-scrollbar {
     display: none;
   }
   body.toc-open .content {
