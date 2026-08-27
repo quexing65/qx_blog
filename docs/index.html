@@ -30,6 +30,8 @@
     <link rel="stylesheet" href="css/sidebar.css" />
     <!-- 自定义主题变量和样式（品牌色 / 暗色模式 / 表格 / 行内代码等） -->
     <link rel="stylesheet" href="css/theme.css" />
+    <!-- 右侧悬浮目录样式（方案A，逻辑见 js/toc.js） -->
+    <link rel="stylesheet" href="css/toc.css" />
     <!-- 霞鹜文楷字体 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" />
     <!-- Maple Mono CN 字体 -->
@@ -262,7 +264,9 @@
 
         // 插件列表（顺序敏感：frontMatterTime 必须在 front-matter 剥离之前执行，
         // 否则读不到日期；mermaid 必须在 shiki 之前执行，
-        // 以便 mermaid 代码块先被转换成 div，不被 shiki 当普通代码高亮）
+        // 以便 mermaid 代码块先被转换成 div，不被 shiki 当普通代码高亮。
+        // 右侧目录插件不在此列：由页面底部的 js/toc.js 自行注册，
+        // 它只读取渲染后的标题 DOM，与上述顺序无关）
         plugins: [
           // 最后更新时间：读 front-matter 的 updated/date 显示在文章底部（函数定义见上方脚本）
           frontMatterTimePlugin,
@@ -387,5 +391,7 @@
     <script src="js/reading-progress.js"></script>
     <!-- 自定义侧边栏折叠交互（替代 docsify-sidebar-collapse 社区插件，v5 结构） -->
     <script src="js/sidebar.js"></script>
+    <!-- 右侧悬浮目录（方案A）：自行注册为 docsify 插件，需在 DOMContentLoaded 前执行（body 底部即满足） -->
+    <script src="js/toc.js"></script>
   </body>
 </html>
