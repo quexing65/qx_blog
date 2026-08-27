@@ -1,11 +1,11 @@
 /* ============================================================
-   右侧目录（方案B：独立右栏 + 收缩键；手机端底部弹出面板）
+   右侧目录（方案B：独立右栏 + 胶囊切换；手机端底部弹出面板）
    结构由 js/toc.js 生成：
-   <body class="toc-open">            桌面展开状态类（收缩键切换 + localStorage 记忆）
-   <nav class="page-toc">             桌面目录面板（fixed 右栏，≥1280px 显示）
-     <div class="page-toc-title">目录</div>
-     <div class="page-toc-list">…button.page-toc-item…</div>
-   <button class="toc-toggle">›/‹</button>   桌面右缘收缩键（fixed）
+   <body class="toc-open">            桌面展开状态类（胶囊切换 + localStorage 记忆）
+   <nav class="page-toc">             桌面目录面板（≥1280px 显示）
+     <div class="page-toc-title">目录</div>        小胶囊（收起时显示）
+     <div class="page-toc-toggle">收起目录</div>    大胶囊（展开时显示，fixed）
+     <div class="page-toc-list">…button.page-toc-item…</div>  列表（fixed 贴右）
    <button class="toc-fab">目录</button>     手机右下角按钮（<1280px 显示）
    <div class="toc-sheet-backdrop">          手机面板遮罩
    <div class="toc-sheet">                   手机底部弹出面板
@@ -18,9 +18,9 @@
    （方案A悬浮在正文右侧空白处的做法在 Windows 经典滚动条下会压住
    正文约 15px，已废弃）。
 
-   注意：目录项/收缩键选择器必须压过 core 主题的 button[type]
+   注意：目录项选择器必须压过 core 主题的 button[type]
    （0,1,1）及其 hover 规则（最高 0,2,1），否则会被渲染成灰底
-   胶囊按钮——目录项用三层 class，收缩键用 body > button.toc-toggle。
+   胶囊按钮——目录项用三层 class（.page-toc .page-toc-list .page-toc-item）。
    ============================================================ */
 :root {
   --toc-indent: 260px; /* 正文让位 = 展开面板220px + 间距40px */
@@ -39,7 +39,7 @@ body.toc-open .content {
 /* ---------- 目录面板（小胶囊/大胶囊中心对称，列表直接贴右边） ---------- */
 .page-toc {
   position: fixed;
-  top: 84px;
+  top: 64px;
   right: 40px; /* 与大胶囊中心对齐（大胶囊right:50px+60px中心=110px，容器right:40px+70px中心=110px） */
   z-index: 15;
   font-size: 12.5px;
@@ -103,7 +103,7 @@ body.toc-open .page-toc-title {
   width: 120px;
   flex-shrink: 0;
   position: fixed;
-  top: 84px;
+  top: 64px;
   right: 50px;
   transition: transform 0.25s ease, opacity 0.25s ease;
   transform: scale(0);
@@ -120,31 +120,24 @@ body.toc-open .page-toc-toggle {
 /* 列表（收起时隐藏，展开时贴右边） */
 .page-toc-list {
   position: fixed;
-  top: 132px;
+  top: 112px;
   right: 0;
   max-height: 0;
   overflow: hidden;
   opacity: 0;
+  pointer-events: none; /* 收起时不可见也不可点，避免挡住右侧正文 */
   width: 220px;
   text-align: left;
+  overscroll-behavior: contain; /* 滚到目录尽头不带动页面滚动 */
+  scrollbar-width: none; /* 目录自身的滚动条太窄太抢眼，隐藏（滚轮/触摸仍可滚） */
   transition: max-height 0.3s ease, opacity 0.25s ease;
 }
 body.toc-open .page-toc-list {
-  max-height: calc(100vh - 160px);
+  max-height: calc(100vh - 140px);
   overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-width: none;
   opacity: 1;
+  pointer-events: auto;
   border-left: 1px solid var(--sidebar-border-color);
-}
-.page-toc-list::-webkit-scrollbar {
-  display: none;
-}
-.page-toc-list {
-  max-height: calc(100vh - 160px);
-  overflow-y: auto;
-  overscroll-behavior: contain; /* 滚到目录尽头不带动页面滚动 */
-  scrollbar-width: none; /* 目录自身的滚动条太窄太抢眼，隐藏（滚轮/触摸仍可滚） */
 }
 .page-toc-list::-webkit-scrollbar {
   display: none;
@@ -205,7 +198,6 @@ html::-webkit-scrollbar {
 @media (max-width: 1279px) {
   /* --- 桌面目录让位 + 右侧滚动条隐藏 --- */
   .page-toc,
-  body > button.toc-toggle,
   .scroll-indicator {
     display: none;
   }
@@ -237,9 +229,6 @@ html::-webkit-scrollbar {
   }
   body > button.toc-fab:active {
     transform: scale(0.95);
-  }
-  body > button.toc-fab[hidden] {
-    display: none; /* 须显式压过上面的 display:flex，hidden 属性才能生效 */
   }
 
   /* --- 遮罩 --- */

@@ -379,7 +379,8 @@
     <script src="https://cdn.jsdelivr.net/gh/mukeshkushwahae/click-heart-animation@v1.0.0/dist/click-heart-animation.min.js" defer></script>
     <script>
       window.addEventListener("DOMContentLoaded", () => {
-        ClickHeartAnimation.init();
+        // CDN 加载失败时静默降级，不阻塞页面
+        if (window.ClickHeartAnimation) ClickHeartAnimation.init();
       });
     </script>
 
