@@ -1,0 +1,144 @@
+/* ============================================================
+   右侧目录（方案B：独立右栏 + 收缩键）—— 结构由 js/toc.js 生成：
+   <body class="toc-open">            展开状态类（收缩键切换 + localStorage 记忆）
+   <nav class="page-toc">             目录面板（fixed 右栏）
+     <div class="page-toc-title">目录</div>
+     <div class="page-toc-list">…button.page-toc-item…</div>
+   <button class="toc-toggle">›/‹</button>   右缘收缩键（fixed）
+
+   布局原理：展开时 body.toc-open 给 .content 加右侧 padding，
+   正文（.markdown-section，宽 75% 居中）自动变窄让位；收起时
+   padding 归零、正文恢复全宽。目录拥有独立栏位，不再挤占正文边距
+   （方案A悬浮在正文右侧空白处的做法在 Windows 经典滚动条下会压住
+   正文约 15px，已废弃）。
+
+   注意：目录项/收缩键选择器必须压过 core 主题的 button[type]
+   （0,1,1）及其 hover 规则（最高 0,2,1），否则会被渲染成灰底
+   胶囊按钮——目录项用三层 class，收缩键用 body > button.toc-toggle。
+   ============================================================ */
+:root {
+  --toc-width: 220px; /* 目录栏宽度 */
+  /* 正文让位宽度 = 收缩键 22px + 间隙 2px + 目录宽 + 目录与正文间距 16px */
+  --toc-indent: calc(var(--toc-width) + 40px);
+}
+
+/* ---------- 正文让位（展开时） ---------- */
+body.toc-open .content {
+  padding-right: var(--toc-indent);
+}
+/* 补上 padding 的过渡（core 只过渡了 left） */
+.content {
+  transition: left var(--duration-medium, 250ms) ease,
+    padding-right var(--duration-medium, 250ms) ease;
+}
+
+/* ---------- 目录面板 ---------- */
+.page-toc {
+  position: fixed;
+  top: 84px;
+  right: 24px; /* 让出右缘 22px 宽的收缩键位置 */
+  width: var(--toc-width);
+  z-index: 15; /* 低于侧栏(60)/主遮罩(40)/进度条(9999)，高于正文 */
+  font-size: 12.5px;
+  line-height: 1.5;
+  transition: opacity 0.25s ease, translate 0.25s ease, visibility 0s;
+}
+/* 收起：淡出 + 右移，visibility 延迟到淡出结束（动画期间可逆，结束后移出无障碍树） */
+body:not(.toc-open) .page-toc {
+  opacity: 0;
+  translate: 24px 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.25s ease, translate 0.25s ease, visibility 0s 0.25s;
+}
+.page-toc-title {
+  margin-bottom: 6px;
+  padding-left: 12px;
+  font-size: 12px;
+  letter-spacing: 4px; /* "目 录" 拉开字距 */
+  color: var(--sidebar-link-color);
+  opacity: 0.65;
+}
+.page-toc-list {
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+  overscroll-behavior: contain; /* 滚到目录尽头不带动页面滚动 */
+  scrollbar-width: none; /* 目录自身的滚动条太窄太抢眼，隐藏（滚轮/触摸仍可滚） */
+}
+.page-toc-list::-webkit-scrollbar {
+  display: none;
+}
+.page-toc .page-toc-list .page-toc-item {
+  display: block;
+  width: 100%;
+  margin: 0; /* 中和 core 主题 button[type] 的 margin-block 和相邻按钮 margin-left */
+  padding: 4px 0 4px 10px;
+  border: none;
+  border-left: 2px solid transparent;
+  box-shadow: none;
+  background: none;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: 1.4;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--sidebar-link-color);
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.page-toc .page-toc-list .page-toc-item:hover {
+  color: var(--theme-color);
+  outline-color: transparent; /* 中和 core 主题按钮的 hover 外框 */
+}
+.page-toc .page-toc-list .page-toc-item.active {
+  color: var(--theme-color);
+  border-left-color: var(--theme-color);
+}
+/* h3 / h4 逐级缩进 */
+.page-toc .page-toc-list .page-toc-item.level-h3 {
+  padding-left: 22px;
+}
+.page-toc .page-toc-list .page-toc-item.level-h4 {
+  padding-left: 34px;
+}
+
+/* ---------- 右缘收缩键（贴右缘垂直居中，观感对齐左侧 docsify 侧栏开关） ---------- */
+body > button.toc-toggle {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  translate: 0 -50%;
+  width: 22px;
+  height: 80px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: var(--border-radius, 3px) 0 0 var(--border-radius, 3px);
+  box-shadow: none;
+  background: var(--sidebar-toggle-bg, #ddd);
+  color: var(--sidebar-toggle-color, #999);
+  font-family: inherit;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 16;
+  transition: background 0.2s, color 0.2s;
+}
+body > button.toc-toggle:hover {
+  background: var(--theme-color); /* 与左侧 docsify 侧栏开关的 hover 一致 */
+  color: #fff;
+  outline-color: transparent;
+}
+
+/* ---------- 窄屏：目录与收缩键整体隐藏，正文不让位 ---------- */
+@media (max-width: 1279px) {
+  .page-toc,
+  body > button.toc-toggle {
+    display: none;
+  }
+  body.toc-open .content {
+    padding-right: 0;
+  }
+}
