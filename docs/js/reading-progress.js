@@ -20,7 +20,7 @@
     topBar.style.width = pct + "%";
   }
 
-  /* ---- 右侧滚动竖条 ---- */
+  /* ---- 右侧滚动竖条（小滑块，跟随滚动位置移动） ---- */
   var sideBar = document.createElement("div");
   sideBar.className = "scroll-indicator";
   sideBar.setAttribute("aria-hidden", "true");
@@ -32,12 +32,16 @@
   function updateSide() {
     var el = document.documentElement;
     var scrollable = el.scrollHeight - el.clientHeight;
-    var pct = scrollable > 0 ? Math.min(100, (el.scrollTop / scrollable) * 100) : 0;
-    sideBar.style.height = (pct * el.clientHeight / 100) + "px";
+    if (scrollable <= 0) { sideBar.style.height = "0px"; return; }
+    var ratio = el.scrollTop / scrollable;
+    var thumbH = Math.max(24, (el.clientHeight / (el.scrollHeight)) * el.clientHeight);
+    var thumbTop = ratio * (el.clientHeight - thumbH);
+    sideBar.style.height = thumbH + "px";
+    sideBar.style.top = thumbTop + "px";
   }
 
   function showSide() {
-    sideBar.style.opacity = "0.6";
+    sideBar.style.opacity = "0.5";
     if (hideTimer) clearTimeout(hideTimer);
     hideTimer = setTimeout(function () {
       sideBar.style.opacity = "0";
