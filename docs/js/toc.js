@@ -26,6 +26,9 @@
   var sheet = null; // 手机底部弹出面板 <div>
   var backdrop = null; // 面板后的半透明遮罩 <div>
   var sheetList = null; // 面板里的标题列表 <div>
+  var sheetThumb = null; // 面板滚动条滑块 <div>
+  var thumbHideTimer = null; // 滑块自动隐藏计时器
+  var THUMB_HIDE_DELAY = 1200; // 滑块隐藏延迟（ms）
   var items = []; // { el: 正文标题元素, link: 桌面目录项, sheetLink: 手机面板项 }
   var open = readOpen();
   var ticking = false;
@@ -220,6 +223,30 @@
       sheetList = document.createElement("div");
       sheetList.className = "toc-sheet-list";
       sheet.appendChild(sheetList);
+
+      // 自定义滚动条滑块（替代浏览器自带滚动条）
+      sheetThumb = document.createElement("div");
+      sheetThumb.className = "toc-sheet-thumb";
+      sheet.appendChild(sheetThumb);
+
+      // 监听面板列表滚动 → 更新滑块位置 + 显示/隐藏
+      sheetList.addEventListener("scroll", function () {
+        var el = sheetList;
+        var ratio = el.scrollTop / (el.scrollHeight - el.clientHeight || 1);
+        var thumbH = Math.max(24, (el.clientHeight / el.scrollHeight) * el.clientHeight);
+        // 滑块在 sheet 内（与 list 同级），top 需加上 list 在 sheet 内的偏移
+        var listOffsetTop = el.offsetTop || 0;
+        var thumbTop = listOffsetTop + ratio * (el.clientHeight - thumbH);
+        sheetThumb.style.height = thumbH + "px";
+        sheetThumb.style.top = thumbTop + "px";
+        sheetThumb.style.opacity = "0.5";
+        if (thumbHideTimer) clearTimeout(thumbHideTimer);
+        thumbHideTimer = setTimeout(function () {
+          sheetThumb.style.opacity = "0";
+          thumbHideTimer = null;
+        }, THUMB_HIDE_DELAY);
+      }, { passive: true });
+
       document.body.appendChild(sheet);
     }
     fab.hidden = false;
