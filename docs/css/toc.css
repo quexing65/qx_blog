@@ -147,9 +147,10 @@ body > button.toc-fab,
 }
 
 @media (max-width: 1279px) {
-  /* --- 桌面目录让位 --- */
+  /* --- 桌面目录让位 + 右侧滚动条隐藏 --- */
   .page-toc,
-  body > button.toc-toggle {
+  body > button.toc-toggle,
+  .scroll-indicator {
     display: none;
   }
   body.toc-open .content {
