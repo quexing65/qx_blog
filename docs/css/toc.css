@@ -74,7 +74,7 @@ body.toc-open .content {
 }
 .page-toc-title:hover { opacity: 0.85; }
 .page-toc-title:active { transform: scale(0.95); }
-/* 大胶囊（展开时替换小胶囊，中心对称） */
+/* 大胶囊（展开时替换小胶囊，居中在分隔线和正文之间） */
 .page-toc-toggle {
   display: none;
   align-items: center;
@@ -96,9 +96,12 @@ body.toc-open .content {
   white-space: nowrap;
   width: 120px;
   flex-shrink: 0;
+  position: fixed;
+  top: 84px;
+  right: 265px; /* 居中在正文和分隔线之间 */
 }
 .page-toc-toggle:hover { opacity: 0.85; }
-.page-toc-toggle:active { transform: scale(0.95); }
+.page-toc-toggle:active { transform: translateX(-50%) scale(0.95); }
 body.toc-open .page-toc-title { display: none; }
 body.toc-open .page-toc-toggle { display: flex; }
 /* 列表（收起时隐藏，展开时贴右边） */
