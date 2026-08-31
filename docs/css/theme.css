@@ -164,7 +164,7 @@ blockquote {
 }
 
 .markdown-section ul li {
-  padding: 4px 0;
+  padding: 0; /* 项间空隙：4px → 1px → 0，完全贴合，行高 1.8 不变 */
   line-height: 1.8;
 }
 
