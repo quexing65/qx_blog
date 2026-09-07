@@ -2,19 +2,19 @@
 date: 2026-09-08
 ---
 
-LeetCode Hot 100 题
+# LeetCode Hot 100 题
 
-# 00.1.两数之和
+## 00.1.两数之和
 
 
 
 [官网链接](https://leetcode.cn/problems/two-sum/description/?envType=study-plan-v2&envId=top-100-liked)
 
-## 题目如下：
+### 题目如下：
 
 ![image-20260908000125445](assets\image-20260908000125445.png)
 
-## 代码如下：
+### 代码如下：
 
 ```python
 class Solution:
@@ -26,7 +26,7 @@ class Solution:
             idx[x] = j
 ```
 
-## 本题解析：
+### 本题解析：
 
 
 
