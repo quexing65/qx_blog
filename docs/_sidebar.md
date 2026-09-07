@@ -1,4 +1,6 @@
 - 编程笔记
+  - LeetCode
+    - [LeetCodeHot100](/note/编程笔记/LeetCode/LeetCodeHot100.md)
   - Web
     - [浏览器引擎为什么不一样](/note/编程笔记/Web/浏览器引擎为什么不一样.md)
     - [浏览器滚动条隐藏](/note/编程笔记/Web/浏览器滚动条隐藏.md)
