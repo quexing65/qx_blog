@@ -12,7 +12,7 @@ LeetCode Hot 100 题
 
 ## 题目如下：
 
-![image-20260908000125445](C:\Users\20336\AppData\Roaming\Typora\typora-user-images\image-20260908000125445.png)
+![image-20260908000125445](assets\image-20260908000125445.png)
 
 ## 代码如下：
 
