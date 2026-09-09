@@ -5,7 +5,7 @@ tags:
   - Pandas
   - 数据分析
 date: 2026-05-23
-updated: 2026-08-02
+updated: 2026-09-10
 ---
 
 # 关于 Pandas
@@ -28,19 +28,6 @@ updated: 2026-08-02
 | 08 | [08.数据合并](08.数据合并.md) | merge、concat、join |
 | 09 | [09.数据分组](09.数据分组.md) | groupby 分组聚合 |
 | 10 | [10.交叉表与透视表](10.交叉表与透视表.md) | 交叉表、透视表、RFM 案例 |
-
-## 配套数据
-
-以下文件均从配套课件原样复制；代码示例默认以当前 `Pandas` 目录为工作目录，从 `./dataset/` 读取：
-
-| 文件 | 用途 |
-|------|------|
-| [1960—2019 全球 GDP 数据](dataset/1960-2019全球GDP数据.csv) | Pandas 初体验、DataFrame 增删改查 |
-| [股票日行情数据](dataset/stock_day.csv) | 索引、切片、排序与 CSV 读写 |
-| [电影数据](dataset/movie.csv) | 缺失值检测、删除与填充 |
-| [优衣库销售数据](dataset/uniqlo.csv) | `groupby` 分组聚合 |
-| [CSV 编码示例](dataset/csv示例文件.csv) | CSV 分隔符、索引与编码演示 |
-| [新闻标题 JSON 样例](dataset/sarcasm-headlines-sample.json) | `read_json`、`to_json` 演示 |
 
 ## 知识体系
 
