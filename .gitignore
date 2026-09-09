@@ -29,6 +29,11 @@ Desktop.ini
 .workbuddy/
 .qoder/
 
+# 项目记忆：供本机各 AI 工具（ZCode / Claude Code / Cursor 等）读取，
+# 内容含本机绝对路径与个人工作习惯。本仓库是公开的，只留在本地、不推送。
+# 换机器时从旧机的记忆目录拷贝，或在对话里让 AI 重新生成。
+.agents/memory/
+
 # IDE
 # JetBrains 系列 IDE（WebStorm / IntelliJ IDEA / PyCharm 等）自动生成的项目配置
 # 里面存的是本地 IDE 状态（打开的文件、断点、运行配置等），换台电脑就不同
