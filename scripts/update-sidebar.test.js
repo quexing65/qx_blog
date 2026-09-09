@@ -9,7 +9,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
-const { formatDate, toDisplayName, readFrontMatter, scanDirectory, collectAllFiles, renderList } = require("./update-sidebar.js");
+const { formatDate, toDisplayName, readFrontMatter, setUpdatedField, scanDirectory, collectAllFiles, renderList } = require("./update-sidebar.js");
 
 /* ================= readFrontMatter ================= */
 
@@ -48,6 +48,41 @@ test("readFrontMatter: 日期格式不合法（未补零）不算有效 date", (
 
 test("readFrontMatter: front-matter 前有空行则匹配不到", () => {
   assert.strictEqual(readFrontMatter("\n---\ndate: 2026-08-18\n---\n"), null);
+});
+
+/* ================= setUpdatedField（提交时刷新 updated） ================= */
+
+test("setUpdatedField: 已有 updated 时替换其值", () => {
+  const out = setUpdatedField("---\ndate: 2026-07-01\nupdated: 2026-08-02\n---\n正文", "2026-09-09");
+  assert.strictEqual(out, "---\ndate: 2026-07-01\nupdated: 2026-09-09\n---\n正文");
+});
+
+test("setUpdatedField: 没有 updated 时插到 date 之后", () => {
+  const out = setUpdatedField("---\ndate: 2026-09-08\n---\n\n正文", "2026-09-09");
+  assert.strictEqual(out, "---\ndate: 2026-09-08\nupdated: 2026-09-09\n---\n\n正文");
+});
+
+test("setUpdatedField: CRLF 行尾保持 CRLF", () => {
+  const out = setUpdatedField("---\r\ndate: 2026-09-08\r\n---\r\n\r\n正文", "2026-09-09");
+  assert.strictEqual(out, "---\r\ndate: 2026-09-08\r\nupdated: 2026-09-09\r\n---\r\n\r\n正文");
+});
+
+test("setUpdatedField: 已是指定日期时返回 null（不重写文件）", () => {
+  assert.strictEqual(setUpdatedField("---\ndate: 2026-09-08\nupdated: 2026-09-09\n---\nx", "2026-09-09"), null);
+});
+
+test("setUpdatedField: 无 front-matter 返回 null", () => {
+  assert.strictEqual(setUpdatedField("# 标题\n正文", "2026-09-09"), null);
+});
+
+test("setUpdatedField: 带 BOM 的文件刷新时剥离 BOM", () => {
+  const out = setUpdatedField("\uFEFF---\ndate: 2026-09-08\n---\n正文", "2026-09-09");
+  assert.strictEqual(out, "---\ndate: 2026-09-08\nupdated: 2026-09-09\n---\n正文");
+});
+
+test("setUpdatedField: 刷完后 readFrontMatter 能读出新日期", () => {
+  const out = setUpdatedField("---\ndate: 2026-09-08\n---\n正文", "2026-09-09");
+  assert.deepStrictEqual(readFrontMatter(out), { date: "2026-09-08", updated: "2026-09-09" });
 });
 
 /* ================= formatDate ================= */

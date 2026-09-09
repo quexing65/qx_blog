@@ -48,6 +48,30 @@ function readFrontMatter(content) {
   return { date: read("date"), updated: read("updated") };
 }
 
+// 把 front-matter 的 updated 字段刷成指定日期（提交钩子用）：
+// 已有 updated 就改值；没有就插到 date 行之后（date 也没有则追加在块尾）。
+// 无 front-matter、或刷完内容无变化时返回 null（调用方跳过写回）
+function setUpdatedField(content, dateStr) {
+  const stripped = content.replace(/^\uFEFF/, "");
+  const match = stripped.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!match) return null;
+  const eol = stripped.includes("\r\n") ? "\r\n" : "\n";
+  const fm = match[1];
+  const updatedLine = "updated: " + dateStr;
+  const existing = fm.match(/^(updated:[^\r\n]*)/m);
+  const dateLine = fm.match(/^(date:[^\r\n]*)/m);
+  let newFm;
+  if (existing) {
+    newFm = fm.replace(existing[0], updatedLine);
+  } else if (dateLine) {
+    newFm = fm.replace(dateLine[0], dateLine[0] + eol + updatedLine);
+  } else {
+    newFm = fm + eol + updatedLine;
+  }
+  const rebuilt = "---" + eol + newFm + eol + "---" + stripped.slice(match[0].length);
+  return rebuilt === stripped ? null : rebuilt;
+}
+
 function scanDirectory(dir, basePath = "") {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   const result = [];
@@ -164,28 +188,51 @@ function collectAllFiles(items, excludeDirs = new Set()) {
 }
 
 // 供测试 require 使用；直接执行（npm run update）时才跑主流程
-module.exports = { formatDate, toDisplayName, readFrontMatter, scanDirectory, renderList, collectAllFiles };
+module.exports = { formatDate, toDisplayName, readFrontMatter, setUpdatedField, scanDirectory, renderList, collectAllFiles };
 
 if (require.main === module) {
-  const structure = scanDirectory(NOTE_DIR);
+  // 提交钩子入口（.git/hooks/pre-commit 调用）：把暂存区里有改动的文章的
+  // updated 刷成今天。必须跑在主流程之前，home.md 才能吃到新日期。
+  // 只处理 M（内容修改）状态的文件：新增文章的 date 本来就是今天，无需重复
+  if (process.argv.includes("--touch-updated")) {
+    const { execFileSync } = require("child_process");
+    const staged = execFileSync(
+      "git",
+      ["diff", "--cached", "--name-only", "--diff-filter=M", "--", "docs/note/"],
+      { encoding: "utf-8" }
+    );
+    const today = formatDate(new Date());
+    for (const rel of staged.split("\n")) {
+      const name = rel.trim();
+      if (!name.endsWith(".md")) continue;
+      const filePath = path.join(DOCS_DIR, name.slice("docs/".length));
+      const next = setUpdatedField(fs.readFileSync(filePath, "utf-8"), today);
+      if (next !== null) {
+        fs.writeFileSync(filePath, next, "utf-8");
+        console.log("已刷新 updated: " + today + " (" + name + ")");
+      }
+    }
+  } else {
+    const structure = scanDirectory(NOTE_DIR);
 
-  fs.writeFileSync(SIDEBAR_FILE, renderList(structure));
-  console.log(`已更新: ${SIDEBAR_FILE}`);
+    fs.writeFileSync(SIDEBAR_FILE, renderList(structure));
+    console.log(`已更新: ${SIDEBAR_FILE}`);
 
-  // 首页用扁平化文章列表（不分文件夹，按 updated/date 排序，知识库等分类不进首页）
-  const templateContent = fs.readFileSync(TEMPLATE_FILE, "utf-8");
-  const allFiles = collectAllFiles(structure, HOME_EXCLUDE_DIRS);
-  const homeContent = allFiles
-    .map((f) => {
-      // 有 updated 的文章同时展示两个日期，与排序口径一致
-      const dateText = f.updateDate
-        ? `发布于 ${f.publishDate} · 更新于 ${f.updateDate}`
-        : f.publishDate;
-      return `- [${f.title}](${f.path}) <span class="article-date">${dateText}</span>`;
-    })
-    .join("\n");
-  fs.writeFileSync(HOME_FILE, templateContent.replace("{{ARTICLE_LIST}}", homeContent.trimEnd()));
-  console.log(`已更新: ${HOME_FILE}`);
+    // 首页用扁平化文章列表（不分文件夹，按 updated/date 排序，知识库等分类不进首页）
+    const templateContent = fs.readFileSync(TEMPLATE_FILE, "utf-8");
+    const allFiles = collectAllFiles(structure, HOME_EXCLUDE_DIRS);
+    const homeContent = allFiles
+      .map((f) => {
+        // 有 updated 的文章同时展示两个日期，与排序口径一致
+        const dateText = f.updateDate
+          ? `发布于 ${f.publishDate} · 更新于 ${f.updateDate}`
+          : f.publishDate;
+        return `- [${f.title}](${f.path}) <span class="article-date">${dateText}</span>`;
+      })
+      .join("\n");
+    fs.writeFileSync(HOME_FILE, templateContent.replace("{{ARTICLE_LIST}}", homeContent.trimEnd()));
+    console.log(`已更新: ${HOME_FILE}`);
 
-  console.log(`共 ${structure.length} 个分类`);
+    console.log(`共 ${structure.length} 个分类`);
+  }
 }
