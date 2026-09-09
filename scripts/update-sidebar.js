@@ -81,6 +81,20 @@ function parseStagedPaths(output) {
   return output.split("\0").filter(Boolean);
 }
 
+// 取暂存区里处于修改（M）状态的文章路径（提交钩子用）。
+// -z 的理由见 parseStagedPaths 注释：中文路径必须原样输出。
+// cwd 可注入：单测传临时仓库路径，让测试执行的就是这段生产代码本身
+function listStagedModifiedArticles(cwd = process.cwd()) {
+  const { execFileSync } = require("child_process");
+  return parseStagedPaths(
+    execFileSync(
+      "git",
+      ["diff", "--cached", "--name-only", "--diff-filter=M", "-z", "--", "docs/note/"],
+      { encoding: "utf-8", cwd }
+    )
+  );
+}
+
 function scanDirectory(dir, basePath = "") {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   const result = [];
@@ -197,22 +211,15 @@ function collectAllFiles(items, excludeDirs = new Set()) {
 }
 
 // 供测试 require 使用；直接执行（npm run update）时才跑主流程
-module.exports = { formatDate, toDisplayName, readFrontMatter, setUpdatedField, parseStagedPaths, scanDirectory, renderList, collectAllFiles };
+module.exports = { formatDate, toDisplayName, readFrontMatter, setUpdatedField, parseStagedPaths, listStagedModifiedArticles, scanDirectory, renderList, collectAllFiles };
 
 if (require.main === module) {
   // 提交钩子入口（.git/hooks/pre-commit 调用）：把暂存区里有改动的文章的
   // updated 刷成今天。必须跑在主流程之前，home.md 才能吃到新日期。
   // 只处理 M（内容修改）状态的文件：新增文章的 date 本来就是今天，无需重复
   if (process.argv.includes("--touch-updated")) {
-    const { execFileSync } = require("child_process");
-    // -z 的理由见 parseStagedPaths 注释：中文路径必须原样输出
-    const staged = execFileSync(
-      "git",
-      ["diff", "--cached", "--name-only", "--diff-filter=M", "-z", "--", "docs/note/"],
-      { encoding: "utf-8" }
-    );
     const today = formatDate(new Date());
-    for (const name of parseStagedPaths(staged)) {
+    for (const name of listStagedModifiedArticles()) {
       if (!name.endsWith(".md")) continue;
       const filePath = path.join(DOCS_DIR, name.slice("docs/".length));
       const next = setUpdatedField(fs.readFileSync(filePath, "utf-8"), today);

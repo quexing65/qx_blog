@@ -9,7 +9,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
-const { formatDate, toDisplayName, readFrontMatter, setUpdatedField, parseStagedPaths, scanDirectory, collectAllFiles, renderList } = require("./update-sidebar.js");
+const { formatDate, toDisplayName, readFrontMatter, setUpdatedField, parseStagedPaths, listStagedModifiedArticles, scanDirectory, collectAllFiles, renderList } = require("./update-sidebar.js");
 
 /* ================= readFrontMatter ================= */
 
@@ -104,13 +104,14 @@ test("parseStagedPaths: 空输出与纯 NUL 输出返回空数组", () => {
   assert.deepStrictEqual(parseStagedPaths("\0"), []);
 });
 
-test("集成: git diff -z 输出的中文路径不被 quotepath 转义（历史 bug 回归）", () => {
+test("集成: listStagedModifiedArticles 对中文路径返回原样路径（历史 bug 回归）", () => {
   const { execFileSync } = require("child_process");
   const git = (args) => execFileSync("git", args, { encoding: "utf-8", cwd: tmpDir });
   const file = path.join(tmpDir, "docs", "note", "墙外的世界", "宝可梦每月优惠口令.md");
 
-  // 建一个临时仓库：中文路径文章先提交一版，再修改并暂存，
-  // 然后用与 --touch-updated 完全相同的 git 调用取暂存文件列表
+  // 建一个临时仓库：中文路径文章先提交一版，再修改并暂存。
+  // 关键：下面调用的是生产代码 listStagedModifiedArticles 本身（cwd 注入临时仓库），
+  // 而不是在测试里复制一份 git 命令——否则 -z 丢失时测试依旧绿灯（假安全网）
   git(["init", "-q"]);
   git(["config", "user.email", "test@test.test"]);
   git(["config", "user.name", "test"]);
@@ -121,10 +122,11 @@ test("集成: git diff -z 输出的中文路径不被 quotepath 转义（历史 
   fs.writeFileSync(file, "---\ndate: 2026-01-01\n---\nchanged", "utf-8");
   git(["add", "."]);
 
-  const out = git(["diff", "--cached", "--name-only", "--diff-filter=M", "-z", "--", "docs/note/"]);
-  const paths = parseStagedPaths(out);
+  const paths = listStagedModifiedArticles(tmpDir);
   assert.deepStrictEqual(paths, ["docs/note/墙外的世界/宝可梦每月优惠口令.md"]);
+  // 历史 bug 断言：路径若被 quotepath 转义，会带首尾引号、以 " 结尾
   assert.ok(paths[0].endsWith(".md"), "路径应未被引号/转义包裹");
+  assert.ok(!paths[0].startsWith('"'), "路径不应以引号开头");
 });
 
 /* ================= formatDate ================= */
