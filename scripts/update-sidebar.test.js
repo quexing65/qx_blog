@@ -9,7 +9,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
-const { formatDate, toDisplayName, readFrontMatter, setUpdatedField, scanDirectory, collectAllFiles, renderList } = require("./update-sidebar.js");
+const { formatDate, toDisplayName, readFrontMatter, setUpdatedField, parseStagedPaths, scanDirectory, collectAllFiles, renderList } = require("./update-sidebar.js");
 
 /* ================= readFrontMatter ================= */
 
@@ -83,6 +83,48 @@ test("setUpdatedField: 带 BOM 的文件刷新时剥离 BOM", () => {
 test("setUpdatedField: 刷完后 readFrontMatter 能读出新日期", () => {
   const out = setUpdatedField("---\ndate: 2026-09-08\n---\n正文", "2026-09-09");
   assert.deepStrictEqual(readFrontMatter(out), { date: "2026-09-08", updated: "2026-09-09" });
+});
+
+/* ================= parseStagedPaths + git 集成（quotepath 回归） ================= */
+
+test("parseStagedPaths: NUL 分隔的中文路径原样解析", () => {
+  const out = "docs/note/编程笔记/LeetCode/LeetCodeHot100.md\0docs/note/墙外的世界/宝可梦每月优惠口令.md\0";
+  const paths = parseStagedPaths(out);
+  assert.deepStrictEqual(paths, [
+    "docs/note/编程笔记/LeetCode/LeetCodeHot100.md",
+    "docs/note/墙外的世界/宝可梦每月优惠口令.md",
+  ]);
+  // 历史 bug 断言：解析结果必须能通过 .md 后缀过滤（旧版拿到的是带引号
+  // 和八进制转义的路径，以 " 结尾，导致刷新流程被整体静默跳过）
+  for (const p of paths) assert.ok(p.endsWith(".md"));
+});
+
+test("parseStagedPaths: 空输出与纯 NUL 输出返回空数组", () => {
+  assert.deepStrictEqual(parseStagedPaths(""), []);
+  assert.deepStrictEqual(parseStagedPaths("\0"), []);
+});
+
+test("集成: git diff -z 输出的中文路径不被 quotepath 转义（历史 bug 回归）", () => {
+  const { execFileSync } = require("child_process");
+  const git = (args) => execFileSync("git", args, { encoding: "utf-8", cwd: tmpDir });
+  const file = path.join(tmpDir, "docs", "note", "墙外的世界", "宝可梦每月优惠口令.md");
+
+  // 建一个临时仓库：中文路径文章先提交一版，再修改并暂存，
+  // 然后用与 --touch-updated 完全相同的 git 调用取暂存文件列表
+  git(["init", "-q"]);
+  git(["config", "user.email", "test@test.test"]);
+  git(["config", "user.name", "test"]);
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, "---\ndate: 2026-01-01\n---\nx", "utf-8");
+  git(["add", "."]);
+  git(["commit", "-qm", "init"]);
+  fs.writeFileSync(file, "---\ndate: 2026-01-01\n---\nchanged", "utf-8");
+  git(["add", "."]);
+
+  const out = git(["diff", "--cached", "--name-only", "--diff-filter=M", "-z", "--", "docs/note/"]);
+  const paths = parseStagedPaths(out);
+  assert.deepStrictEqual(paths, ["docs/note/墙外的世界/宝可梦每月优惠口令.md"]);
+  assert.ok(paths[0].endsWith(".md"), "路径应未被引号/转义包裹");
 });
 
 /* ================= formatDate ================= */

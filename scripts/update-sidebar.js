@@ -72,6 +72,15 @@ function setUpdatedField(content, dateStr) {
   return rebuilt === stripped ? null : rebuilt;
 }
 
+// 解析 git diff -z 的输出：路径以 \0 分隔（末尾带一个多余的 \0）。
+// 必须用 -z 的原因：它同时关闭 quotepath 转义——core.quotepath 默认 true 时
+// 中文路径会被双引号包裹并做八进制转义（"docs/note/\347\274..."），
+// 导致下游 .endsWith(".md") 失配、整个刷新流程被静默跳过
+// （2026-09-09 的历史 bug：仓库内 84 篇文章路径全含中文，无一生效）
+function parseStagedPaths(output) {
+  return output.split("\0").filter(Boolean);
+}
+
 function scanDirectory(dir, basePath = "") {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   const result = [];
@@ -188,7 +197,7 @@ function collectAllFiles(items, excludeDirs = new Set()) {
 }
 
 // 供测试 require 使用；直接执行（npm run update）时才跑主流程
-module.exports = { formatDate, toDisplayName, readFrontMatter, setUpdatedField, scanDirectory, renderList, collectAllFiles };
+module.exports = { formatDate, toDisplayName, readFrontMatter, setUpdatedField, parseStagedPaths, scanDirectory, renderList, collectAllFiles };
 
 if (require.main === module) {
   // 提交钩子入口（.git/hooks/pre-commit 调用）：把暂存区里有改动的文章的
@@ -196,14 +205,14 @@ if (require.main === module) {
   // 只处理 M（内容修改）状态的文件：新增文章的 date 本来就是今天，无需重复
   if (process.argv.includes("--touch-updated")) {
     const { execFileSync } = require("child_process");
+    // -z 的理由见 parseStagedPaths 注释：中文路径必须原样输出
     const staged = execFileSync(
       "git",
-      ["diff", "--cached", "--name-only", "--diff-filter=M", "--", "docs/note/"],
+      ["diff", "--cached", "--name-only", "--diff-filter=M", "-z", "--", "docs/note/"],
       { encoding: "utf-8" }
     );
     const today = formatDate(new Date());
-    for (const rel of staged.split("\n")) {
-      const name = rel.trim();
+    for (const name of parseStagedPaths(staged)) {
       if (!name.endsWith(".md")) continue;
       const filePath = path.join(DOCS_DIR, name.slice("docs/".length));
       const next = setUpdatedField(fs.readFileSync(filePath, "utf-8"), today);
