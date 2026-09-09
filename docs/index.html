@@ -221,17 +221,26 @@
         });
       }
 
-      // 正文图片懒加载：给文章里的 <img> 补上原生懒加载属性，首屏只下载可见的图。
-      // 最重的 MySQL 进阶一篇引用了 225 张图、约 59MB，不懒加载会一次性全下。
-      // decoding="async" 让图片解码不占用主线程，长文滚动更顺。
-      function lazyImagePlugin(hook) {
-        hook.doneEach(function () {
-          document.querySelectorAll(".markdown-section img").forEach(function (img) {
-            if (img.loading) return; // 已处理过（切页复用节点）就不重复设置
-            img.loading = "lazy";
-            img.decoding = "async";
-          });
-        });
+      // 正文图片懒加载：在 markdown 渲染阶段就给 <img> 带上 loading="lazy"。
+      //
+      // 为什么不用 doneEach 事后补属性：图片一插入 DOM 就开始下载，事后设置
+      // 属性不会取消在途请求——实测最重的 MySQL 进阶一篇 221 张图仍在 13ms 内
+      // 齐发，懒加载完全失效。必须在生成 HTML 时就带上。
+      //
+      // 为什么用 markdown 函数形式：docsify 会把 renderer 实例作为第二个参数传进来，
+      // 而 docsify 自己的渲染器实现保存在 renderer.origin 上（它负责把相对路径
+      // 解析成 /note/... 绝对路径）。调用它既保留路径解析，又能拿到最终 src。
+      function lazyImageRenderer(marked, renderer) {
+        const originImage = renderer.origin && renderer.origin.image;
+        if (originImage) {
+          renderer.image = function (href, title, text) {
+            return originImage
+              .call(this, href, title, text)
+              .replace(/<img\s/, '<img loading="lazy" decoding="async" ');
+          };
+        }
+        marked.setOptions({ renderer: renderer });
+        return marked;
       }
 
       window.$docsify = {
@@ -275,6 +284,9 @@
           hideOtherSidebarContent: false, // 是否隐藏其他侧边栏内容
         },
 
+        // 正文图片懒加载：渲染阶段给 <img> 注入 loading="lazy"（函数定义见上方脚本）
+        markdown: lazyImageRenderer,
+
         // 插件列表（顺序敏感：frontMatterTime 必须在 front-matter 剥离之前执行，
         // 否则读不到日期；mermaid 必须在 shiki 之前执行，
         // 以便 mermaid 代码块先被转换成 div，不被 shiki 当普通代码高亮）
@@ -310,8 +322,6 @@
               addCopyButtonsToShiki();
             });
           },
-          // 正文图片懒加载：给 <img> 补 loading="lazy"（函数定义见上方脚本）
-          lazyImagePlugin,
         ],
       };
     </script>
