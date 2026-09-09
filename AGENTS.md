@@ -33,8 +33,18 @@ npm run sync:vault  # 从 Obsidian vault 同步「知识库」目录
 
 ## 记忆文件（`.agents/memory/`）
 
-- **不纳入版本控制**：本仓库公开，记忆里含本机绝对路径与个人工作习惯，已在 `.gitignore` 中忽略
+- **不纳入本仓库版本控制**：本仓库公开，记忆里含本机绝对路径与个人工作习惯，
+  已在 `.gitignore` 中忽略
 - 内容：用户画像、部署事实、日期系统、钩子设计、UI 方案等；入口是 `MEMORY.md` 索引
-- 新机器 / 重新 clone 后该目录为空，需从旧机拷贝，或在对话中让 AI 重新生成
 - **动代码前先读相关记忆**（例如改目录功能先读 `qxblog-toc-right-sidebar.md`），
   里面记录了设计意图与踩过的坑
+- **换机器 / 重新 clone 后**，该目录为空，用私有仓库恢复：
+
+  ```bash
+  git clone https://github.com/quexing65/qx_blog-memory.git .agents/memory
+  ```
+
+  该私有仓库是记忆的独立备份（不在本仓库内、不通过 submodule 引用，因此本仓库
+  完全看不到它的存在）。改动记忆后在里面 `git commit && git push` 即可。
+  若不想拉取，也可在对话中让 AI 重新生成。
+
