@@ -1,0 +1,22 @@
+# 统一行尾与二进制标记。
+#
+# 目的：本机 core.autocrlf=true（Windows），而 CI 跑在 Linux 上。
+# CI 会执行 git diff --exit-code docs/ 做 drift 校验，一旦同一文件在两边
+# 因 CRLF/LF 不一致而被视为「有改动」，就会报一个和内容无关的假 drift。
+# 仓库内文本统一存 LF，二进制文件不做任何转换。
+#
+# 说明：现有历史中所有文本文件存的已是 LF，加本文件不会产生行尾改动。
+
+* text=auto eol=lf
+
+# 二进制文件：不转换行尾、不尝试文本 diff
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.xlsx binary
+*.xls binary
+*.zip binary
+*.pdf binary

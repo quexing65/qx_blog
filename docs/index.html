@@ -23,9 +23,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
     <link rel="icon" href="_media/favicon.ico" />
     <!-- Docsify v5 Core Theme -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify@5/dist/themes/core.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify@5.0.0/dist/themes/core.min.css" />
     <!-- Docsify v5 Vue Theme (add-on，保持 v4 外观) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify@5/dist/themes/addons/vue.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify@5.0.0/dist/themes/addons/vue.min.css" />
     <!-- 自定义侧边栏样式（300px 宽度 + 文件夹/文件图标 + 折叠，替代 sidebar-collapse 插件） -->
     <link rel="stylesheet" href="css/sidebar.css" />
     <!-- 自定义主题变量和样式（品牌色 / 暗色模式 / 表格 / 行内代码等） -->
@@ -221,6 +221,19 @@
         });
       }
 
+      // 正文图片懒加载：给文章里的 <img> 补上原生懒加载属性，首屏只下载可见的图。
+      // 最重的 MySQL 进阶一篇引用了 225 张图、约 59MB，不懒加载会一次性全下。
+      // decoding="async" 让图片解码不占用主线程，长文滚动更顺。
+      function lazyImagePlugin(hook) {
+        hook.doneEach(function () {
+          document.querySelectorAll(".markdown-section img").forEach(function (img) {
+            if (img.loading) return; // 已处理过（切页复用节点）就不重复设置
+            img.loading = "lazy";
+            img.decoding = "async";
+          });
+        });
+      }
+
       window.$docsify = {
         name: "𝓺𝓾𝓮𝔁𝓲𝓷𝓰",
         loadSidebar: true,
@@ -297,11 +310,13 @@
               addCopyButtonsToShiki();
             });
           },
+          // 正文图片懒加载：给 <img> 补 loading="lazy"（函数定义见上方脚本）
+          lazyImagePlugin,
         ],
       };
     </script>
     <!-- Docsify v5 -->
-    <script src="https://cdn.jsdelivr.net/npm/docsify@5/dist/docsify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docsify@5.0.0/dist/docsify.min.js"></script>
 
     <!-- plugins -->
 
@@ -309,11 +324,11 @@
     <!-- 分页导航插件 -->
     <script src="https://cdn.jsdelivr.net/npm/docsify-pagination@2.10.1/dist/docsify-pagination.min.js"></script>
     <!-- 图片缩放插件（v5 内置） -->
-    <script src="https://cdn.jsdelivr.net/npm/docsify@5/dist/plugins/zoom-image.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docsify@5.0.0/dist/plugins/zoom-image.min.js"></script>
     <!-- 字数统计插件 -->
     <script src="https://cdn.jsdelivr.net/npm/docsify-count@1.1.0/dist/countable.min.js"></script>
     <!-- 搜索插件（v5 内置） -->
-    <script src="https://cdn.jsdelivr.net/npm/docsify@5/dist/plugins/search.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docsify@5.0.0/dist/plugins/search.min.js"></script>
     <!-- 脚注插件 -->
     <script src="https://cdn.jsdelivr.net/npm/docsify-footnote@1.0.8/dist/docsify-footnote.min.js"></script>
     <!-- Shiki 代码高亮（懒加载：页面有代码块时才下载 shiki 内核） -->
