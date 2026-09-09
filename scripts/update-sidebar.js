@@ -1,11 +1,16 @@
 const fs = require("fs");
 const path = require("path");
 
-const NOTE_DIR = path.join(__dirname, "..", "docs", "note");
-const DOCS_DIR = path.join(__dirname, "..", "docs");
+const REPO_ROOT = path.join(__dirname, "..");
+const NOTE_DIR = path.join(REPO_ROOT, "docs", "note");
+const DOCS_DIR = path.join(REPO_ROOT, "docs");
 const SIDEBAR_FILE = path.join(DOCS_DIR, "_sidebar.md");
 const HOME_FILE = path.join(DOCS_DIR, "home.md");
 const TEMPLATE_FILE = path.join(__dirname, "template.md");
+
+// 生成文件的仓库相对路径（POSIX 风格）：钩子要精确 git add 它们
+const SIDEBAR_REL = "docs/_sidebar.md";
+const HOME_REL = "docs/home.md";
 
 const IGNORE_DIRS = new Set(["archive"]);
 
@@ -84,7 +89,7 @@ function parseStagedPaths(output) {
 // 取暂存区里处于修改（M）状态的文章路径（提交钩子用）。
 // -z 的理由见 parseStagedPaths 注释：中文路径必须原样输出。
 // cwd 可注入：单测传临时仓库路径，让测试执行的就是这段生产代码本身
-function listStagedModifiedArticles(cwd = process.cwd()) {
+function listStagedModifiedArticles(cwd = REPO_ROOT) {
   const { execFileSync } = require("child_process");
   return parseStagedPaths(
     execFileSync(
@@ -95,7 +100,66 @@ function listStagedModifiedArticles(cwd = process.cwd()) {
   );
 }
 
-function scanDirectory(dir, basePath = "") {
+// 精确暂存指定文件（仓库相对路径），替代钩子里 `git add "docs/note/"`
+// 那种整目录暂存——后者会把工作区里未暂存的草稿和无关改动一并吞进本次提交。
+// 只对显式列出的路径执行，不碰其它文件。
+function stageFiles(files, cwd = REPO_ROOT) {
+  if (files.length === 0) return;
+  const { execFileSync } = require("child_process");
+  execFileSync("git", ["add", "--", ...files], { encoding: "utf-8", cwd });
+}
+
+// 刷新一篇暂存文章的 updated 应写入的日期：取文件 mtime 的本地日期，
+// 即「内容实际改动日」，而不是运行/提交当天——跨天补提交时后者会把日期记晚
+// （2026-09-09 宝可梦那次：内容 09-08 改的，提交在 09-09，钩子会记成 09-09）。
+// 不允许回退：候选日期早于文件已有的 updated 时返回 null（例如回退到旧版本）。
+function updatedDateFor(filePath, existingUpdated) {
+  const candidate = formatDate(fs.statSync(filePath).mtime);
+  if (existingUpdated && candidate < existingUpdated) return null;
+  return candidate;
+}
+
+// 把暂存区里已修改文章的 updated 刷成各自文件的 mtime 日期，返回被改写的路径列表
+// （仓库相对路径）。cwd 可注入，单测在临时仓库里跑的就是这段生产代码。
+function touchUpdated(cwd = REPO_ROOT) {
+  const written = [];
+  for (const name of listStagedModifiedArticles(cwd)) {
+    if (!name.endsWith(".md")) continue;
+    const filePath = path.join(cwd, name);
+    const content = fs.readFileSync(filePath, "utf-8");
+    const meta = readFrontMatter(content);
+    const dateStr = updatedDateFor(filePath, meta && meta.updated);
+    if (dateStr === null) continue;
+    const next = setUpdatedField(content, dateStr);
+    if (next !== null) {
+      fs.writeFileSync(filePath, next, "utf-8");
+      written.push(name);
+    }
+  }
+  return written;
+}
+
+// 取仓库中「已跟踪或已暂存」的文章绝对路径集合。
+// 工作区里未跟踪的草稿不在其中——它们不存在于 CI 的检出内容里，一旦进入
+// 生成的侧边栏/首页，提交后 CI 重新生成的结果就会不一致（drift 报红），
+// 而且会被钩子连带提交。非 git 环境（单测的临时目录）返回 null，表示不过滤。
+function trackedArticlePaths(cwd = REPO_ROOT) {
+  try {
+    const { execFileSync } = require("child_process");
+    const out = execFileSync("git", ["ls-files", "-z", "--cached", "--", "docs/note/"], {
+      encoding: "utf-8",
+      cwd,
+    });
+    return new Set(parseStagedPaths(out).map((p) => path.resolve(cwd, p)));
+  } catch {
+    return null;
+  }
+}
+
+// written：可选数组，收集本次补写了 front-matter 的文件（绝对路径）。
+// 钩子据此精确 git add，而不是整目录暂存（避免吞掉未暂存的草稿）。
+// include：可选过滤函数，返回 false 的文件整个跳过（不补写、不进侧边栏）。
+function scanDirectory(dir, basePath = "", written = [], include = () => true) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   const result = [];
 
@@ -104,7 +168,7 @@ function scanDirectory(dir, basePath = "") {
 
     if (entry.isDirectory()) {
       if (IGNORE_DIRS.has(entry.name)) continue;
-      const children = scanDirectory(path.join(dir, entry.name), relativePath);
+      const children = scanDirectory(path.join(dir, entry.name), relativePath, written, include);
       if (children.length > 0) {
         const folderTime = children.reduce((max, c) => (c.sortDate > max ? c.sortDate : max), "0000-00-00");
         result.push({
@@ -116,6 +180,10 @@ function scanDirectory(dir, basePath = "") {
       }
     } else if (entry.isFile() && entry.name.endsWith(".md")) {
       const filePath = path.join(dir, entry.name);
+      // include 过滤（钩子用）：未跟踪的草稿整个跳过——不补写 front-matter，
+      // 也不进侧边栏/首页。否则生成文件会引用一篇没被提交的草稿，CI 重新生成
+      // 时看不到它，drift 校验必然报红
+      if (!include(filePath)) continue;
       const stats = fs.statSync(filePath);
       // 读入时剥离 UTF-8 BOM 头（Windows 记事本保存的文件常见）：
       // BOM 会让下方 ^--- 匹配不到 front-matter，导致误判后重复补写
@@ -128,6 +196,7 @@ function scanDirectory(dir, basePath = "") {
         const mtimeDate = formatDate(stats.mtime);
         fs.writeFileSync(filePath, "---\ndate: " + mtimeDate + "\n---\n\n" + content, "utf-8");
         meta = { date: mtimeDate, updated: null };
+        written.push(filePath);
         console.log("已自动补写 front-matter (date: " + mtimeDate + "): " + filePath);
       } else if (!meta.date) {
         console.warn("警告: " + filePath + " 的 front-matter 缺少有效 date 字段，本次按 mtime 显示");
@@ -210,45 +279,66 @@ function collectAllFiles(items, excludeDirs = new Set()) {
   return files.sort((a, b) => b.sortDate.localeCompare(a.sortDate));
 }
 
+// 重新生成侧边栏与首页（提交钩子在刷新 updated 之后必须调用，
+// 否则文章日期变了而 home.md 还是旧的，CI 的 drift 校验会报红）。
+// include：可选过滤函数，见 scanDirectory。钩子传「只含已跟踪文章」，
+// 避免把工作区未跟踪的草稿写进生成文件（那会让 CI drift 报红）。
+// 返回本次被补写 front-matter 的文章（仓库相对路径），供钩子精确暂存。
+function generateSite(include) {
+  const written = [];
+  const structure = scanDirectory(NOTE_DIR, "", written, include);
+
+  fs.writeFileSync(SIDEBAR_FILE, renderList(structure));
+  console.log(`已更新: ${SIDEBAR_FILE}`);
+
+  // 首页用扁平化文章列表（不分文件夹，按 updated/date 排序，知识库等分类不进首页）
+  const templateContent = fs.readFileSync(TEMPLATE_FILE, "utf-8");
+  const allFiles = collectAllFiles(structure, HOME_EXCLUDE_DIRS);
+  const homeContent = allFiles
+    .map((f) => {
+      // 有 updated 的文章同时展示两个日期，与排序口径一致
+      const dateText = f.updateDate
+        ? `发布于 ${f.publishDate} · 更新于 ${f.updateDate}`
+        : f.publishDate;
+      return `- [${f.title}](${f.path}) <span class="article-date">${dateText}</span>`;
+    })
+    .join("\n");
+  fs.writeFileSync(HOME_FILE, templateContent.replace("{{ARTICLE_LIST}}", homeContent.trimEnd()));
+  console.log(`已更新: ${HOME_FILE}`);
+
+  console.log(`共 ${structure.length} 个分类`);
+
+  return written.map((p) => path.relative(REPO_ROOT, p).replace(/\\/g, "/"));
+}
+
 // 供测试 require 使用；直接执行（npm run update）时才跑主流程
-module.exports = { formatDate, toDisplayName, readFrontMatter, setUpdatedField, parseStagedPaths, listStagedModifiedArticles, scanDirectory, renderList, collectAllFiles };
+module.exports = {
+  formatDate,
+  toDisplayName,
+  readFrontMatter,
+  setUpdatedField,
+  parseStagedPaths,
+  listStagedModifiedArticles,
+  stageFiles,
+  trackedArticlePaths,
+  updatedDateFor,
+  touchUpdated,
+  scanDirectory,
+  renderList,
+  collectAllFiles,
+  generateSite,
+  SIDEBAR_REL,
+  HOME_REL,
+};
 
 if (require.main === module) {
-  // 提交钩子入口（.git/hooks/pre-commit 调用）：把暂存区里有改动的文章的
-  // updated 刷成今天。必须跑在主流程之前，home.md 才能吃到新日期。
-  // 只处理 M（内容修改）状态的文件：新增文章的 date 本来就是今天，无需重复
+  // 提交钩子入口（scripts/pre-commit.js 也直接调用 touchUpdated/generateSite）：
+  // 把暂存区里有改动文章的 updated 刷成该文件 mtime 的日期
   if (process.argv.includes("--touch-updated")) {
-    const today = formatDate(new Date());
-    for (const name of listStagedModifiedArticles()) {
-      if (!name.endsWith(".md")) continue;
-      const filePath = path.join(DOCS_DIR, name.slice("docs/".length));
-      const next = setUpdatedField(fs.readFileSync(filePath, "utf-8"), today);
-      if (next !== null) {
-        fs.writeFileSync(filePath, next, "utf-8");
-        console.log("已刷新 updated: " + today + " (" + name + ")");
-      }
+    for (const name of touchUpdated()) {
+      console.log("已刷新 updated (" + name + ")");
     }
   } else {
-    const structure = scanDirectory(NOTE_DIR);
-
-    fs.writeFileSync(SIDEBAR_FILE, renderList(structure));
-    console.log(`已更新: ${SIDEBAR_FILE}`);
-
-    // 首页用扁平化文章列表（不分文件夹，按 updated/date 排序，知识库等分类不进首页）
-    const templateContent = fs.readFileSync(TEMPLATE_FILE, "utf-8");
-    const allFiles = collectAllFiles(structure, HOME_EXCLUDE_DIRS);
-    const homeContent = allFiles
-      .map((f) => {
-        // 有 updated 的文章同时展示两个日期，与排序口径一致
-        const dateText = f.updateDate
-          ? `发布于 ${f.publishDate} · 更新于 ${f.updateDate}`
-          : f.publishDate;
-        return `- [${f.title}](${f.path}) <span class="article-date">${dateText}</span>`;
-      })
-      .join("\n");
-    fs.writeFileSync(HOME_FILE, templateContent.replace("{{ARTICLE_LIST}}", homeContent.trimEnd()));
-    console.log(`已更新: ${HOME_FILE}`);
-
-    console.log(`共 ${structure.length} 个分类`);
+    generateSite();
   }
 }

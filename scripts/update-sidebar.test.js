@@ -9,7 +9,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
-const { formatDate, toDisplayName, readFrontMatter, setUpdatedField, parseStagedPaths, listStagedModifiedArticles, scanDirectory, collectAllFiles, renderList } = require("./update-sidebar.js");
+const { formatDate, toDisplayName, readFrontMatter, setUpdatedField, parseStagedPaths, listStagedModifiedArticles, stageFiles, trackedArticlePaths, updatedDateFor, touchUpdated, scanDirectory, collectAllFiles, renderList, generateSite, SIDEBAR_REL, HOME_REL } = require("./update-sidebar.js");
 
 /* ================= readFrontMatter ================= */
 
@@ -127,6 +127,151 @@ test("集成: listStagedModifiedArticles 对中文路径返回原样路径（历
   // 历史 bug 断言：路径若被 quotepath 转义，会带首尾引号、以 " 结尾
   assert.ok(paths[0].endsWith(".md"), "路径应未被引号/转义包裹");
   assert.ok(!paths[0].startsWith('"'), "路径不应以引号开头");
+});
+
+/* ================= 日期语义：mtime 即内容实际改动日 ================= */
+
+// 建一个临时 git 仓库（含 docs/note/），返回 git 调用器
+function initRepo(dir) {
+  const { execFileSync } = require("child_process");
+  const git = (args) => execFileSync("git", args, { encoding: "utf-8", cwd: dir });
+  git(["init", "-q"]);
+  git(["config", "user.email", "test@test.test"]);
+  git(["config", "user.name", "test"]);
+  fs.mkdirSync(path.join(dir, "docs", "note"), { recursive: true });
+  return git;
+}
+
+// 把文件 mtime 设为指定日期（本地时区正午，避开边界）
+function setMtime(file, y, m, d) {
+  const t = new Date(y, m - 1, d, 12, 0, 0);
+  fs.utimesSync(file, t, t);
+}
+
+test("updatedDateFor: 取文件 mtime 的日期（内容实际改动日，非提交当天）", () => {
+  const file = path.join(tmpDir, "文章.md");
+  fs.writeFileSync(file, "---\ndate: 2026-01-01\n---\nx", "utf-8");
+  setMtime(file, 2026, 9, 8);
+  assert.strictEqual(updatedDateFor(file, null), "2026-09-08");
+});
+
+test("updatedDateFor: mtime 早于已有 updated 时返回 null（不回退日期）", () => {
+  // 场景：检出旧版本 / 回滚后 mtime 变早，不应把已记录的更新日改小
+  const file = path.join(tmpDir, "文章.md");
+  fs.writeFileSync(file, "---\ndate: 2026-01-01\nupdated: 2026-09-09\n---\nx", "utf-8");
+  setMtime(file, 2026, 9, 1);
+  assert.strictEqual(updatedDateFor(file, "2026-09-09"), null);
+});
+
+test("updatedDateFor: mtime 等于已有 updated 时仍返回该日期（由 setUpdatedField 判空）", () => {
+  const file = path.join(tmpDir, "文章.md");
+  fs.writeFileSync(file, "---\ndate: 2026-01-01\n---\nx", "utf-8");
+  setMtime(file, 2026, 9, 9);
+  assert.strictEqual(updatedDateFor(file, "2026-09-09"), "2026-09-09");
+});
+
+test("集成: touchUpdated 把 updated 刷成 mtime 日期而非今天", () => {
+  const git = initRepo(tmpDir);
+  const file = path.join(tmpDir, "docs", "note", "宝可梦每月优惠口令.md");
+  fs.writeFileSync(file, "---\ndate: 2026-07-01\nupdated: 2026-08-02\n---\n八月", "utf-8");
+  git(["add", "."]);
+  git(["commit", "-qm", "init"]);
+
+  fs.writeFileSync(file, "---\ndate: 2026-07-01\nupdated: 2026-08-02\n---\n九月", "utf-8");
+  setMtime(file, 2026, 9, 8);
+  git(["add", "."]);
+
+  const written = touchUpdated(tmpDir);
+  assert.deepStrictEqual(written, ["docs/note/宝可梦每月优惠口令.md"]);
+  // 关键：09-08 是内容改动日，不是运行当天（今天是 2026-09-09+）
+  assert.match(fs.readFileSync(file, "utf-8"), /^updated: 2026-09-08$/m);
+});
+
+test("集成: touchUpdated 对已是最新日期的文件不重写（返回空）", () => {
+  const git = initRepo(tmpDir);
+  const file = path.join(tmpDir, "docs", "note", "文章.md");
+  fs.writeFileSync(file, "---\ndate: 2026-01-01\nupdated: 2026-09-08\n---\nv1", "utf-8");
+  git(["add", "."]);
+  git(["commit", "-qm", "init"]);
+
+  fs.writeFileSync(file, "---\ndate: 2026-01-01\nupdated: 2026-09-08\n---\nv2", "utf-8");
+  setMtime(file, 2026, 9, 8);
+  git(["add", "."]);
+
+  assert.deepStrictEqual(touchUpdated(tmpDir), []);
+});
+
+test("集成: stageFiles 只暂存列出的文件，不吞无关改动与草稿（历史 bug 回归）", () => {
+  // 历史 bug：钩子末尾 `git add "docs/note/"` 会把工作区里未暂存的改动
+  // 和未完成草稿一并暂存进本次提交。此测试锁定精确暂存的行为。
+  const git = initRepo(tmpDir);
+  const a = path.join(tmpDir, "docs", "note", "只提交这篇.md");
+  const b = path.join(tmpDir, "docs", "note", "无关改动.md");
+  const draft = path.join(tmpDir, "docs", "note", "未完成草稿.md");
+  fs.writeFileSync(a, "---\ndate: 2026-01-01\n---\na1", "utf-8");
+  fs.writeFileSync(b, "---\ndate: 2026-01-01\n---\nb1", "utf-8");
+  git(["add", "."]);
+  git(["commit", "-qm", "init"]);
+
+  // 只暂存 A；B 仅改工作区，草稿是未跟踪文件
+  fs.writeFileSync(a, "---\ndate: 2026-01-01\n---\na2", "utf-8");
+  git(["add", "--", "docs/note/只提交这篇.md"]);
+  fs.writeFileSync(b, "---\ndate: 2026-01-01\n---\nb2", "utf-8");
+  fs.writeFileSync(draft, "草稿内容", "utf-8");
+
+  stageFiles(["docs/note/只提交这篇.md"], tmpDir);
+
+  // 用 -z + 生产解析函数读暂存列表（测试自己的 git 输出同样会被 quotepath 转义）
+  const staged = parseStagedPaths(git(["diff", "--cached", "--name-only", "-z"]));
+  assert.deepStrictEqual(staged, ["docs/note/只提交这篇.md"]);
+  // B 与草稿必须仍在暂存区外
+  const unstaged = parseStagedPaths(git(["diff", "--name-only", "-z"]));
+  assert.deepStrictEqual(unstaged, ["docs/note/无关改动.md"]);
+  assert.ok(git(["status", "--porcelain", "-z"]).includes("未完成草稿.md"), "草稿应仍是未跟踪状态");
+});
+
+test("scanDirectory: written 数组收集被补写 front-matter 的文件", () => {
+  const written = [];
+  fs.writeFileSync(path.join(tmpDir, "新文章.md"), "正文", "utf-8");
+  fs.writeFileSync(path.join(tmpDir, "已有.md"), "---\ndate: 2026-01-01\n---\nx", "utf-8");
+
+  scanDirectory(tmpDir, "", written);
+
+  assert.strictEqual(written.length, 1);
+  assert.ok(written[0].endsWith("新文章.md"));
+});
+
+test("scanDirectory: include 返回 false 的文件被跳过且不补写（草稿不进生成文件）", () => {
+  const written = [];
+  const keep = path.join(tmpDir, "已跟踪.md");
+  const draft = path.join(tmpDir, "草稿.md");
+  fs.writeFileSync(keep, "---\ndate: 2026-01-01\n---\nx", "utf-8");
+  fs.writeFileSync(draft, "未写完的草稿", "utf-8");
+
+  const result = scanDirectory(tmpDir, "", written, (p) => p === keep);
+
+  assert.deepStrictEqual(result.map((r) => r.title), ["已跟踪"]);
+  assert.deepStrictEqual(written, [], "被跳过的草稿不应被补写");
+  assert.strictEqual(fs.readFileSync(draft, "utf-8"), "未写完的草稿", "草稿内容应保持原样");
+});
+
+test("集成: trackedArticlePaths 只含已跟踪文章，未跟踪草稿不在其中", () => {
+  const git = initRepo(tmpDir);
+  const tracked = path.join(tmpDir, "docs", "note", "已跟踪.md");
+  const draft = path.join(tmpDir, "docs", "note", "草稿.md");
+  fs.writeFileSync(tracked, "---\ndate: 2026-01-01\n---\nx", "utf-8");
+  git(["add", "."]);
+  git(["commit", "-qm", "init"]);
+  fs.writeFileSync(draft, "草稿", "utf-8"); // 未跟踪
+
+  const set = trackedArticlePaths(tmpDir);
+  assert.ok(set.has(path.resolve(tracked)), "已跟踪文章应在集合中");
+  assert.ok(!set.has(path.resolve(draft)), "未跟踪草稿不应在集合中");
+});
+
+test("导出常量: 生成文件的仓库相对路径供钩子精确暂存", () => {
+  assert.strictEqual(SIDEBAR_REL, "docs/_sidebar.md");
+  assert.strictEqual(HOME_REL, "docs/home.md");
 });
 
 /* ================= formatDate ================= */
