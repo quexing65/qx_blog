@@ -1,6 +1,6 @@
 ---
 date: 2026-09-08
-updated: 2026-09-12
+updated: 2026-09-14
 ---
 
 # LeetCode Hot 100 题
@@ -31,7 +31,7 @@ class Solution:
 
 ### 题目如下：
 
-![image-20260912235528603](assets\image-20260912235528603.png)
+![image-20260912235528603](assets/image-20260912235528603.png)
 
 ### 代码如下：
 
@@ -60,7 +60,7 @@ class Solution:
 
 ### 题目如下：
 
-![image-20260912235620047](assets\image-20260912235620047.png)
+![image-20260912235620047](assets/image-20260912235620047.png)
 
 ### 代码如下：
 

@@ -1,3 +1,8 @@
+---
+date: 2026-07-29
+updated: 2026-09-14
+---
+
 # 美团 LongCat API 代理
 
 API 获取页面：https://longcat.chat/platform/usage

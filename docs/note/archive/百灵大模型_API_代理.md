@@ -1,3 +1,8 @@
+---
+date: 2026-07-29
+updated: 2026-09-14
+---
+
 # 百灵大模型 API 代理
 
 API 获取页面：https://ling.tbox.cn/open
