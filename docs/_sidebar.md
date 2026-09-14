@@ -39,8 +39,8 @@
     - [01.MySQL基础](/note/知识库/MySQL/01.MySQL基础.md)
     - [02.MySQL进阶](/note/知识库/MySQL/02.MySQL进阶.md)
     - [03.MySQL运维](/note/知识库/MySQL/03.MySQL运维.md)
-    - [关于MySQL](/note/知识库/MySQL/关于MySQL.md)
     - [总结-MySQL知识树](/note/知识库/MySQL/总结-MySQL知识树.md)
+    - [关于MySQL](/note/知识库/MySQL/关于MySQL.md)
     - [关于数据库的建表与字段设计](/note/知识库/MySQL/关于数据库的建表与字段设计.md)
   - Numpy
     - [01.Numpy优势](/note/知识库/Numpy/01.Numpy优势.md)

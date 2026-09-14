@@ -4,7 +4,7 @@ tags:
   - 总结
   - 知识树
 date: 2026-06-18
-updated: 2026-08-11
+updated: 2026-09-14
 ---
 
 # MySQL 知识树总结
@@ -34,7 +34,7 @@ MySQL 学习路线
 
 ## SQL 命令树
 
-```
+```text
 SQL 命令分类树
 │
 ├── 🏗️ DDL（数据定义语言）
@@ -122,7 +122,7 @@ SQL 命令分类树
 
 ## 执行顺序速查
 
-```
+```text
 DQL 执行顺序（逻辑顺序，非书写顺序）
 FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT
 
@@ -132,7 +132,7 @@ SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY → LIMIT
 
 ## 约束速查
 
-```
+```text
 约束类型树
 ├── PRIMARY KEY    主键（NOT NULL + UNIQUE，表中只能有一个；AUTO_INCREMENT 可选）
 ├── NOT NULL       非空（不允许NULL，允许重复值）
@@ -145,7 +145,7 @@ SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY → LIMIT
 
 ## 多表关系速查
 
-```
+```text
 多表关系
 ├── 一对多: "多"方通常添加外键，指向"一"方候选键
 ├── 多对多: 创建关联表（两个FK；可用复合PK，未必需要独立自增ID）
@@ -154,7 +154,7 @@ SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY → LIMIT
 
 ## COUNT 对比速查
 
-```
+```text
 COUNT 对比（面试高频）
 ├── COUNT(col)   只统计该表达式非NULL的行
 ├── COUNT(*)     统计结果集中的行数（通常最能表达“数行”）

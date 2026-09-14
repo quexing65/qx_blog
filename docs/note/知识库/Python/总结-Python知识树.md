@@ -46,7 +46,7 @@ Python 学习路线
 
 ## 函数/方法速查树
 
-```
+```text
 Python 内置函数树
 ├── 🔤 类型与转换
 │   ├── int() / float() / str() / bool()    类型转换
@@ -79,7 +79,7 @@ Python 内置函数树
     └── keyword.kwlist                       关键字列表
 ```
 
-```
+```text
 字符串方法树
 ├── 查找: find / index / rfind / rindex
 ├── 替换: replace(old, new, count)
@@ -89,7 +89,7 @@ Python 内置函数树
 └── 判断: isdigit / isalpha / isalnum / isspace / isupper / islower
 ```
 
-```
+```text
 文件操作树
 ├── 打开: open(path, mode, encoding)
 │   └── 模式: r(读) / w(写) / a(追加) / rb(二进制读) / wb(二进制写)
@@ -99,7 +99,7 @@ Python 内置函数树
 └── 上下文: with open(...) as f:  （自动关闭）
 ```
 
-```
+```text
 高阶函数树
 ├── map(fn, iterable)              批量映射 → map对象(迭代器)
 │   ├── list(map(int, ['1','2']))  类型转换常用
@@ -120,7 +120,7 @@ Python 内置函数树
     └── reduce() / sorted() → 无推导式等价
 ```
 
-```
+```text
 面向对象树
 ├── 定义: class ClassName:
 ├── 初始化/显示/终结: __init__ / __str__ / __del__（终结时机不可靠）
@@ -136,7 +136,7 @@ Python 内置函数树
 └── 魔术方法: __init__ / __str__ / __del__ / __dict__
 ```
 
-```
+```text
 闭包与装饰器树
 ├── 闭包三要素: 嵌套 + 内部引用外部变量 + 外部返回内部函数
 ├── nonlocal var → 修改外部函数变量
@@ -144,7 +144,7 @@ Python 内置函数树
     └── 模式: def deco(fn): def wrapper(*args, **kwargs): 增强; return fn(*args, **kwargs); return wrapper
 ```
 
-```
+```text
 网络编程树
 ├── Socket (TCP)
 │   ├── server: socket() → bind() → listen() → accept() → send/recv
@@ -155,7 +155,7 @@ Python 内置函数树
 └── 互斥锁: threading.Lock() → acquire() / release()
 ```
 
-```
+```text
 迭代器/生成器/正则树
 ├── 迭代器: __iter__() + __next__() / next(iterator)
 ├── 生成器
@@ -168,7 +168,7 @@ Python 内置函数树
     └── result.group(n)  取第n组
 ```
 
-```
+```text
 排序算法树
 ├── 冒泡排序 bubble_sort     O(n²) 稳定   相邻比较交换
 ├── 选择排序 select_sort     O(n²) 不稳定 选最小放前面
@@ -184,7 +184,7 @@ Python 内置函数树
     └── postorder_travel()   后序遍历 LRD
 ```
 
-```
+```text
 FastAPI Web开发树
 ├── 路由: @app.get/post/put/delete
 ├── 参数: Path() / Query() / BaseModel(请求体)
@@ -203,7 +203,7 @@ FastAPI Web开发树
 └── 架构: models / schemas / crud / routers / utils / config
 ```
 
-```
+```text
 OS模块树
 ├── os.getcwd()       当前目录
 ├── os.chdir()        切换目录
@@ -213,7 +213,7 @@ OS模块树
 └── os.listdir()      列出目录内容
 ```
 
-```
+```text
 PyMySQL树
 ├── pymysql.connect() → conn
 │   ├── conn.cursor() → cursor

@@ -29,7 +29,7 @@ Pandas 学习路线
 
 ## 函数速查树
 
-```
+```text
 Pandas 函数分类树
 │
 ├── 📥 数据读取
@@ -121,7 +121,7 @@ Pandas 函数分类树
 
 ## loc vs iloc 速查
 
-```
+```text
 索引对比
 ├── loc  → 标签索引   闭区间 [start:end]  含两端
 ├── iloc → 位置索引   开区间 [start:end)  不含右端
@@ -131,7 +131,7 @@ Pandas 函数分类树
 
 ## groupby 三大操作对比
 
-```
+```text
 groupby 后操作对比
 ├── agg       压缩: 每组 → 1行   行数 = 组数
 ├── transform 广播: 每组统计 → 回填每行   行数 = 原行数
@@ -140,7 +140,7 @@ groupby 后操作对比
 
 ## concat vs merge 速查
 
-```
+```text
 数据合并对比
 ├── concat → 结构拼接（同结构纵向/横向堆叠）→ 类似 SQL UNION ALL
 └── merge  → 键值关联（按共同列匹配）→ 类似 SQL JOIN

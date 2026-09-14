@@ -39,7 +39,7 @@ Matplotlib 学习路线
 
 ## 函数速查树
 
-```
+```text
 Matplotlib 函数分类树
 │
 ├── 🖼️ 画布与显示
@@ -77,7 +77,7 @@ Matplotlib 函数分类树
 
 ## 图表选择速查
 
-```
+```text
 图表选择指南
 ├── 趋势变化（随时间）    → 折线图  plt.plot()
 ├── 离散比较（大小对比）  → 柱状图  plt.bar()
@@ -88,7 +88,7 @@ Matplotlib 函数分类树
 
 ## 线条与颜色速查
 
-```
+```text
 线条样式 linestyle
 ├── '-'    实线      '--'   虚线
 ├── '-.'   点划线    ':'    点线
@@ -107,7 +107,7 @@ Matplotlib 函数分类树
 
 ## 绘图流程速查
 
-```
+```text
 标准三步绘图流程
 1. plt.figure(figsize, dpi)     创建画布
 2. plt.plot/bar/hist/pie/scatter  绑定数据
