@@ -312,6 +312,12 @@
     heads.forEach(function (h, i) {
       var jump = function () {
         lockSpy(i); // 先锁定：滚动途中弯钩不漂移，落点处邻近标题也抢不走
+        // 把锚点写进 URL（replaceState 只改地址栏，不触发页面重载）：
+        // ①刷新后能停在当前小节 ②Shiki 异步高亮完成后能补滚到正确位置
+        if (h.id) {
+          var base = location.hash.split("?")[0];
+          history.replaceState(null, "", base + "?id=" + encodeURIComponent(h.id));
+        }
         var top = h.getBoundingClientRect().top + window.scrollY - SCROLL_OFFSET;
         window.scrollTo({ top: top, behavior: "smooth" });
       };
