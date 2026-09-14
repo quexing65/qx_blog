@@ -326,8 +326,10 @@
         if (window.__shikiBusy) {
           window.__tocClickSeq = (window.__tocClickSeq || 0) + 1;
           var seq = window.__tocClickSeq;
+          var fallbackTimer = null;
           var onDone = function () {
             window.removeEventListener("shiki-done", onDone);
+            if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
             if (seq !== window.__tocClickSeq) return; // 期间又点了别的，本次作废
             // Shiki 完了但图片可能还在加载，等页面高度稳定后再滚
             if (h.id && typeof window.scrollWhenStable === "function") {
@@ -337,9 +339,11 @@
             }
           };
           window.addEventListener("shiki-done", onDone);
-          // 兜底：8 秒后即使事件没来也滚（防止异常卡死）
-          setTimeout(function () {
+          // 兜底：8 秒后即使事件没来也滚（防止异常卡死）。
+          // onDone 触发时会 clearTimeout，避免事件已到还被兜底再拽一次。
+          fallbackTimer = setTimeout(function () {
             window.removeEventListener("shiki-done", onDone);
+            fallbackTimer = null;
             if (seq === window.__tocClickSeq) doScroll();
           }, 8000);
         } else {
