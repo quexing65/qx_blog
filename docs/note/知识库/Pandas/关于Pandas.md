@@ -5,7 +5,7 @@ tags:
   - Pandas
   - 数据分析
 date: 2026-05-23
-updated: 2026-09-10
+updated: 2026-09-14
 ---
 
 # 关于 Pandas
@@ -31,7 +31,7 @@ updated: 2026-09-10
 
 ## 知识体系
 
-```
+```text
 Pandas
 ├── 基础
 │   ├── 数据结构（Series、DataFrame）

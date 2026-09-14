@@ -4,7 +4,7 @@ tags:
   - 总结
   - 知识树
 date: 2026-06-18
-updated: 2026-08-02
+updated: 2026-09-14
 ---
 
 # Python数据分析 知识树总结
@@ -13,7 +13,7 @@ updated: 2026-08-02
 
 ## 学习路线树
 
-```
+```text
 Python数据分析 学习路线
 ├── 04. RFM案例                    ← 会员价值度模型（客户分群）
 │   ├── 概念: Recency(最近消费) + Frequency(消费频率) + Monetary(消费金额)

@@ -263,6 +263,35 @@
         return marked;
       }
 
+      // 等页面高度连续稳定后再滚动到锚点。
+      // 背景：长文章含大量懒加载图片（无 width/height），Shiki 高亮完成后
+      // 图片仍在陆续加载，每加载一张就把下方内容推下去，可达上万 px 漂移。
+      // 策略：每 100ms 采样 scrollHeight，连续 3 次不变即视为稳定；
+      // 最长等 5 秒，超时也滚（避免图片加载极慢时永远卡住）。
+      function scrollWhenStable(anchorId) {
+        var MAX_WAIT = 5000;
+        var STABLE_NEEDED = 3;
+        var start = Date.now();
+        var lastHeight = 0;
+        var stableCount = 0;
+        function check() {
+          var h = document.documentElement.scrollHeight;
+          if (h === lastHeight && h > 0) {
+            stableCount++;
+          } else {
+            stableCount = 0;
+            lastHeight = h;
+          }
+          if (stableCount >= STABLE_NEEDED || Date.now() - start > MAX_WAIT) {
+            var el = document.getElementById(anchorId);
+            if (el) el.scrollIntoView();
+            return;
+          }
+          setTimeout(check, 100);
+        }
+        check();
+      }
+
       window.$docsify = {
         name: "𝓺𝓾𝓮𝔁𝓲𝓷𝓰",
         loadSidebar: true,
@@ -330,37 +359,41 @@
               // 若还在高亮则等 shiki-done 事件后再滚，避免位置偏移
               window.__shikiBusy = true;
 
-              for (const block of document.querySelectorAll("pre code")) {
-                const pre = block.parentElement;
-                if (pre.classList.contains("shiki")) continue;
+              try {
+                for (const block of document.querySelectorAll("pre code")) {
+                  const pre = block.parentElement;
+                  if (pre.classList.contains("shiki")) continue;
 
-                const lang =
-                  Array.from(block.classList)
-                    .find((c) => c.startsWith("lang-"))
-                    ?.replace("lang-", "") || "text";
+                  const lang =
+                    Array.from(block.classList)
+                      .find((c) => c.startsWith("lang-"))
+                      ?.replace("lang-", "") || "text";
 
-                pre.outerHTML = await window.shikiHighlight(block.textContent, lang);
+                  // 单块失败不影响其他块（shikiHighlight 内部已兜底，
+                  // 这里再保一层：万一返回值异常也跳过）
+                  try {
+                    pre.outerHTML = await window.shikiHighlight(block.textContent, lang);
+                  } catch (e) {
+                    console.warn("Shiki: block highlight failed, skipping", e);
+                  }
+                }
+
+                // Shiki 高亮后重新添加复制按钮
+                addCopyButtonsToShiki();
+              } finally {
+                // 无论成功失败都复位状态并派发事件，
+                // 否则 __shikiBusy 永远卡在 true，目录跳转要干等 8 秒兜底
+                window.__shikiBusy = false;
+                window.dispatchEvent(new CustomEvent("shiki-done"));
               }
 
-              // Shiki 高亮后重新添加复制按钮
-              addCopyButtonsToShiki();
-
-              window.__shikiBusy = false;
-              window.dispatchEvent(new CustomEvent("shiki-done"));
-
-              // 高亮完成后页面高度变化（长文章尤其明显），重新定位锚点。
-              // 注意：必须从 location.hash 解析 id，不能用 vm.route.query.id——
-              // toc.js 用 history.replaceState 写入的锚点不会同步到 Docsify 内部
-              // 路由对象，vm.route.query 始终是页面初始加载时的值。
+              // 高亮完成后页面高度仍可能变化（懒加载图片无预留尺寸，
+              // 加载后把下方内容整体推下，长文章可达上万 px 漂移）。
+              // 等页面高度连续稳定后再滚，覆盖图片/字体等所有异步渲染。
               var anchorMatch = (location.hash || "").match(/[?&]id=([^&]+)/);
               var anchorId = anchorMatch ? decodeURIComponent(anchorMatch[1]) : null;
               if (anchorId) {
-                requestAnimationFrame(() =>
-                  requestAnimationFrame(() => {
-                    const el = document.getElementById(anchorId);
-                    if (el) el.scrollIntoView();
-                  })
-                );
+                scrollWhenStable(anchorId);
               }
             });
           },
@@ -421,8 +454,19 @@
           html = await codeToHtml(code, { lang, theme: currentTheme });
         } catch (e) {
           console.warn(`Shiki: Language "${lang}" not found, fallback to text`);
-          lang = "text";
-          html = await codeToHtml(code, { lang: "text", theme: currentTheme });
+          try {
+            html = await codeToHtml(code, { lang: "text", theme: currentTheme });
+            lang = "text";
+          } catch (e2) {
+            // 精简包连 text/plaintext 都没有（jsdelivr +esm 入口），
+            // 直接返回未高亮的纯文本 <pre><code>，绝不让异常逃出去卡死整篇
+            console.warn("Shiki: text fallback also failed, rendering plain text");
+            html =
+              '<pre class="shiki"><code class="language-text">' +
+              code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") +
+              "</code></pre>";
+            lang = "text";
+          }
         }
         // Shiki 默认输出的 <code> 不带 language-xxx class、<pre> 不带 data-lang，
         // v5 核心主题的代码块样式依赖这些标记，缺失时样式不生效。补上。

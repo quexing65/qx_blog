@@ -4,7 +4,7 @@ tags:
   - 总结
   - 知识树
 date: 2026-06-18
-updated: 2026-07-31
+updated: 2026-09-14
 ---
 
 # Numpy 知识树总结
@@ -13,7 +13,7 @@ updated: 2026-07-31
 
 ## 学习路线树
 
-```
+```text
 Numpy 学习路线
 ├── 01. Numpy优势               ← 为什么用Numpy（性能对比）
 │   └── ndarray vs list: 同构 dtype + 规则内存布局 + 向量化底层循环

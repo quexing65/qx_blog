@@ -27,8 +27,8 @@
     - [09.软硬链接](/note/知识库/Linux/09.软硬链接.md)
     - [10.网络与进程管理](/note/知识库/Linux/10.网络与进程管理.md)
     - [11.压缩与解压缩](/note/知识库/Linux/11.压缩与解压缩.md)
-    - [关于Linux](/note/知识库/Linux/关于Linux.md)
     - [总结-Linux知识树](/note/知识库/Linux/总结-Linux知识树.md)
+    - [关于Linux](/note/知识库/Linux/关于Linux.md)
   - Matplotlib
     - [01.Matplotlib快速入门](/note/知识库/Matplotlib/01.Matplotlib快速入门.md)
     - [02.Matplotlib基础绘图](/note/知识库/Matplotlib/02.Matplotlib基础绘图.md)
@@ -91,8 +91,8 @@
       - [03.FastAPI依赖注入与数据库](/note/知识库/Python/Web开发/03.FastAPI依赖注入与数据库.md)
       - [04.FastAPI项目实战-AI掘金头条](/note/知识库/Python/Web开发/04.FastAPI项目实战-AI掘金头条.md)
       - [关于Web开发](/note/知识库/Python/Web开发/关于Web开发.md)
-    - [关于Python](/note/知识库/Python/关于Python.md)
     - [总结-Python知识树](/note/知识库/Python/总结-Python知识树.md)
+    - [关于Python](/note/知识库/Python/关于Python.md)
   - Python数据分析
     - [04.RFM案例](/note/知识库/Python数据分析/04.RFM案例.md)
     - [05.Pandas与Seaborn绘图扩展](/note/知识库/Python数据分析/05.Pandas与Seaborn绘图扩展.md)

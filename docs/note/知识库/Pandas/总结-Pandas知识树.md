@@ -4,7 +4,7 @@ tags:
   - 总结
   - 知识树
 date: 2026-06-18
-updated: 2026-07-31
+updated: 2026-09-14
 ---
 
 # Pandas 知识树总结
@@ -13,7 +13,7 @@ updated: 2026-07-31
 
 ## 学习路线树
 
-```
+```text
 Pandas 学习路线
 ├── 01. Pandas框架概述              ← 安装 + 读取CSV + 列名修改
 ├── 02. Pandas数据结构              ← ★ Series(1D) + DataFrame(2D)

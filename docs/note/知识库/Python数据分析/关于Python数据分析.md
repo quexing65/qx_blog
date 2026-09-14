@@ -4,7 +4,7 @@ tags:
   - Python
   - 数据分析
 date: 2026-05-22
-updated: 2026-08-02
+updated: 2026-09-14
 ---
 
 # 关于 Python 数据分析
@@ -25,7 +25,7 @@ updated: 2026-08-02
 
 ## 知识体系
 
-```
+```text
 Python 数据分析
 ├── Pandas（数据处理）
 │   ├── 数据结构（Series、DataFrame）

@@ -5,7 +5,7 @@ tags:
   - Matplotlib
   - 数据可视化
 date: 2024-09-02
-updated: 2026-07-31
+updated: 2026-09-14
 ---
 
 # 关于 Matplotlib
@@ -24,7 +24,7 @@ updated: 2026-07-31
 
 ## 知识体系
 
-```
+```text
 Matplotlib
 ├── 基础
 │   ├── Figure（画布）

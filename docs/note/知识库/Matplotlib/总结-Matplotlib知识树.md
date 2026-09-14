@@ -4,7 +4,7 @@ tags:
   - 总结
   - 知识树
 date: 2026-06-18
-updated: 2026-07-31
+updated: 2026-09-14
 ---
 
 # Matplotlib 知识树总结
@@ -13,7 +13,7 @@ updated: 2026-07-31
 
 ## 学习路线树
 
-```
+```text
 Matplotlib 学习路线
 ├── 01. 快速入门                    ← 三步绘图流程
 │   └── plt.figure() → plt.plot() → plt.show()

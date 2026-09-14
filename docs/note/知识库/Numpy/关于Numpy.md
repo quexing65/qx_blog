@@ -5,7 +5,7 @@ tags:
   - Numpy
   - 数据分析
 date: 2024-09-01
-updated: 2026-07-31
+updated: 2026-09-14
 ---
 
 # 关于 NumPy
@@ -26,7 +26,7 @@ updated: 2026-07-31
 
 ## 知识体系
 
-```
+```text
 NumPy
 ├── ndarray 对象
 │   ├── 属性（shape、ndim、size、dtype）

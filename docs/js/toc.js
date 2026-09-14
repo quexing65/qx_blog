@@ -329,7 +329,12 @@
           var onDone = function () {
             window.removeEventListener("shiki-done", onDone);
             if (seq !== window.__tocClickSeq) return; // 期间又点了别的，本次作废
-            requestAnimationFrame(function () { requestAnimationFrame(doScroll); });
+            // Shiki 完了但图片可能还在加载，等页面高度稳定后再滚
+            if (h.id && typeof window.scrollWhenStable === "function") {
+              window.scrollWhenStable(h.id);
+            } else {
+              requestAnimationFrame(function () { requestAnimationFrame(doScroll); });
+            }
           };
           window.addEventListener("shiki-done", onDone);
           // 兜底：8 秒后即使事件没来也滚（防止异常卡死）
