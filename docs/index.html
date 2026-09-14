@@ -340,6 +340,19 @@
 
               // Shiki 高亮后重新添加复制按钮
               addCopyButtonsToShiki();
+
+              // 高亮完成后页面高度变化（长文章尤其明显），重新定位锚点。
+              // Docsify 在 doneEach 触发时就滚了锚点，但不等异步高亮，
+              // 导致靠后的标题偏移严重；这里等布局稳定后补滚一次。
+              const id = vm.route.query && vm.route.query.id;
+              if (id) {
+                requestAnimationFrame(() =>
+                  requestAnimationFrame(() => {
+                    const el = document.getElementById(id);
+                    if (el) el.scrollIntoView();
+                  })
+                );
+              }
             });
           },
         ],
