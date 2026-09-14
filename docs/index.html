@@ -266,14 +266,22 @@
       // 等页面高度连续稳定后再滚动到锚点。
       // 背景：长文章含大量懒加载图片（无 width/height），Shiki 高亮完成后
       // 图片仍在陆续加载，每加载一张就把下方内容推下去，可达上万 px 漂移。
-      // 策略：每 100ms 采样 scrollHeight，连续 3 次不变即视为稳定；
-      // 最长等 5 秒，超时也滚（避免图片加载极慢时永远卡住）。
-      function scrollWhenStable(anchorId) {
-        var MAX_WAIT = 5000;
-        var STABLE_NEEDED = 3;
+      // 策略：每 80ms 采样 scrollHeight，连续 2 次不变即视为稳定；
+      // 最长等 3 秒，超时也滚（避免图片加载极慢时永远卡住）。
+      function scrollWhenStable(anchorId, offset) {
+        var MAX_WAIT = 3000;
+        var STABLE_NEEDED = 2;
+        var SAMPLE_INTERVAL = 80;
+        var SCROLL_OFFSET = offset || 40;
         var start = Date.now();
         var lastHeight = 0;
         var stableCount = 0;
+        function doScroll() {
+          var el = document.getElementById(anchorId);
+          if (!el) return;
+          var top = el.getBoundingClientRect().top + window.scrollY - SCROLL_OFFSET;
+          window.scrollTo({ top: top, behavior: "auto" });
+        }
         function check() {
           var h = document.documentElement.scrollHeight;
           if (h === lastHeight && h > 0) {
@@ -283,11 +291,10 @@
             lastHeight = h;
           }
           if (stableCount >= STABLE_NEEDED || Date.now() - start > MAX_WAIT) {
-            var el = document.getElementById(anchorId);
-            if (el) el.scrollIntoView();
+            doScroll();
             return;
           }
-          setTimeout(check, 100);
+          setTimeout(check, SAMPLE_INTERVAL);
         }
         check();
       }

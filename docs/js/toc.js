@@ -317,11 +317,16 @@
           var base = location.hash.split("?")[0];
           history.replaceState(null, "", base + "?id=" + encodeURIComponent(h.id));
         }
-        // 滚动到目标标题。若 Shiki 还在异步高亮，页面高度还在变，
-        // 此时算的位置不准——等 shiki-done 事件后再滚，避免先错后跳。
-        var doScroll = function () {
-          var top = h.getBoundingClientRect().top + window.scrollY - SCROLL_OFFSET;
-          window.scrollTo({ top: top, behavior: "smooth" });
+        // 统一走 scrollWhenStable：等页面高度稳定后即时定位。
+        // Shiki 高亮期间点击 → 先等 shiki-done 再等稳定；
+        // 高亮完成后点击 → 直接等稳定（通常 160ms 内就滚，图片还在加载时也不会偏）。
+        var scrollNow = function () {
+          if (h.id && typeof window.scrollWhenStable === "function") {
+            window.scrollWhenStable(h.id, SCROLL_OFFSET);
+          } else {
+            var top = h.getBoundingClientRect().top + window.scrollY - SCROLL_OFFSET;
+            window.scrollTo({ top: top, behavior: "auto" });
+          }
         };
         if (window.__shikiBusy) {
           window.__tocClickSeq = (window.__tocClickSeq || 0) + 1;
@@ -331,12 +336,7 @@
             window.removeEventListener("shiki-done", onDone);
             if (fallbackTimer) { clearTimeout(fallbackTimer); fallbackTimer = null; }
             if (seq !== window.__tocClickSeq) return; // 期间又点了别的，本次作废
-            // Shiki 完了但图片可能还在加载，等页面高度稳定后再滚
-            if (h.id && typeof window.scrollWhenStable === "function") {
-              window.scrollWhenStable(h.id);
-            } else {
-              requestAnimationFrame(function () { requestAnimationFrame(doScroll); });
-            }
+            scrollNow();
           };
           window.addEventListener("shiki-done", onDone);
           // 兜底：8 秒后即使事件没来也滚（防止异常卡死）。
@@ -344,10 +344,10 @@
           fallbackTimer = setTimeout(function () {
             window.removeEventListener("shiki-done", onDone);
             fallbackTimer = null;
-            if (seq === window.__tocClickSeq) doScroll();
+            if (seq === window.__tocClickSeq) scrollNow();
           }, 8000);
         } else {
-          doScroll();
+          scrollNow();
         }
       };
 
