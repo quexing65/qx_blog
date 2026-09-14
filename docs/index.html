@@ -326,6 +326,10 @@
             hook.doneEach(async function () {
               if (!window.shikiHighlight) return;
 
+              // 标记高亮进行中：toc.js 点击目录时会检查这个标记，
+              // 若还在高亮则等 shiki-done 事件后再滚，避免位置偏移
+              window.__shikiBusy = true;
+
               for (const block of document.querySelectorAll("pre code")) {
                 const pre = block.parentElement;
                 if (pre.classList.contains("shiki")) continue;
@@ -341,14 +345,19 @@
               // Shiki 高亮后重新添加复制按钮
               addCopyButtonsToShiki();
 
+              window.__shikiBusy = false;
+              window.dispatchEvent(new CustomEvent("shiki-done"));
+
               // 高亮完成后页面高度变化（长文章尤其明显），重新定位锚点。
-              // Docsify 在 doneEach 触发时就滚了锚点，但不等异步高亮，
-              // 导致靠后的标题偏移严重；这里等布局稳定后补滚一次。
-              const id = vm.route.query && vm.route.query.id;
-              if (id) {
+              // 注意：必须从 location.hash 解析 id，不能用 vm.route.query.id——
+              // toc.js 用 history.replaceState 写入的锚点不会同步到 Docsify 内部
+              // 路由对象，vm.route.query 始终是页面初始加载时的值。
+              var anchorMatch = (location.hash || "").match(/[?&]id=([^&]+)/);
+              var anchorId = anchorMatch ? decodeURIComponent(anchorMatch[1]) : null;
+              if (anchorId) {
                 requestAnimationFrame(() =>
                   requestAnimationFrame(() => {
-                    const el = document.getElementById(id);
+                    const el = document.getElementById(anchorId);
                     if (el) el.scrollIntoView();
                   })
                 );

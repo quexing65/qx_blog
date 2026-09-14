@@ -312,14 +312,34 @@
     heads.forEach(function (h, i) {
       var jump = function () {
         lockSpy(i); // 先锁定：滚动途中弯钩不漂移，落点处邻近标题也抢不走
-        // 把锚点写进 URL（replaceState 只改地址栏，不触发页面重载）：
-        // ①刷新后能停在当前小节 ②Shiki 异步高亮完成后能补滚到正确位置
+        // 把锚点写进 URL（replaceState 只改地址栏，不触发页面重载）
         if (h.id) {
           var base = location.hash.split("?")[0];
           history.replaceState(null, "", base + "?id=" + encodeURIComponent(h.id));
         }
-        var top = h.getBoundingClientRect().top + window.scrollY - SCROLL_OFFSET;
-        window.scrollTo({ top: top, behavior: "smooth" });
+        // 滚动到目标标题。若 Shiki 还在异步高亮，页面高度还在变，
+        // 此时算的位置不准——等 shiki-done 事件后再滚，避免先错后跳。
+        var doScroll = function () {
+          var top = h.getBoundingClientRect().top + window.scrollY - SCROLL_OFFSET;
+          window.scrollTo({ top: top, behavior: "smooth" });
+        };
+        if (window.__shikiBusy) {
+          window.__tocClickSeq = (window.__tocClickSeq || 0) + 1;
+          var seq = window.__tocClickSeq;
+          var onDone = function () {
+            window.removeEventListener("shiki-done", onDone);
+            if (seq !== window.__tocClickSeq) return; // 期间又点了别的，本次作废
+            requestAnimationFrame(function () { requestAnimationFrame(doScroll); });
+          };
+          window.addEventListener("shiki-done", onDone);
+          // 兜底：8 秒后即使事件没来也滚（防止异常卡死）
+          setTimeout(function () {
+            window.removeEventListener("shiki-done", onDone);
+            if (seq === window.__tocClickSeq) doScroll();
+          }, 8000);
+        } else {
+          doScroll();
+        }
       };
 
       var link = document.createElement("button");
