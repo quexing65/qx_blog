@@ -1,5 +1,7 @@
 # qx_blog
 
+你好！
+
 > 基于 [Docsify](https://docsify.js.org) 的极简静态博客
 > 线上地址：https://b.quexing.cc.cd（Vercel 托管，只发布 `docs/`）
 > 项目约定与 AI 协作说明见 [AGENTS.md](AGENTS.md)
