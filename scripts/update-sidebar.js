@@ -14,9 +14,9 @@ const HOME_REL = "docs/home.md";
 
 const IGNORE_DIRS = new Set(["archive"]);
 
-// 首页文章流排除的顶级分类：知识库从 vault 整体同步（scripts/sync-vault.js），
-// 篇幅大且非按时间消费的内容，首页不收录，从侧边栏「知识库」分类进入
-const HOME_EXCLUDE_DIRS = new Set(["知识库"]);
+// 首页文章流排除的顶级分类：别人的知识库从 vault 整体同步（scripts/sync-vault.js），
+// 篇幅大且非按时间消费的内容，首页不收录，从侧边栏「别人的知识库」分类进入
+const HOME_EXCLUDE_DIRS = new Set(["别人的知识库"]);
 
 // 文件名以「数字.」开头（如 01.xxx）视为教程编号章节：
 // 同目录内排在无编号文件之前，按编号升序（01→02→10），

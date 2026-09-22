@@ -18,13 +18,13 @@ npm run check:links # 外链可用性检查
 npm test            # 单元测试
 npm run serve       # 本地预览 http://localhost:3000
 npm run setup:hooks # 安装 pre-commit 钩子（每台新机器一次）
-npm run sync:vault  # 从 Obsidian vault 同步「知识库」目录
+npm run sync:vault  # 从 Obsidian vault 同步「别人的知识库」目录
 ```
 
 ## 硬性约定
 
 - **文件名不能含空格**，用下划线代替（`check-spaces.js` 强制，CI 会拦截）
-- **`docs/note/知识库/` 禁止直接放文件**：该目录由 `sync:vault` 单向镜像同步，
+- **`docs/note/别人的知识库/` 禁止直接放文件**：该目录由 `sync:vault` 单向镜像同步，
   vault 里没有的内容会被删除。改这个目录的内容必须**同时改 vault 源**
   （`E:\obdsin\笔记\基础知识\`）和 docs 镜像
 - **改完文章跑 `npm run update`**，否则 CI 的 drift 校验（`git diff --exit-code docs/`）报红

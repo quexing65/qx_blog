@@ -26,7 +26,7 @@ npm run update   # 重建侧边栏（docs/_sidebar.md）与首页（docs/home.md
 | `npm run check:links` | 外链可用性检查 |
 | `npm test` | 单元测试（update-sidebar 等） |
 | `npm run serve` | 本地预览 http://localhost:3000 |
-| `npm run sync:vault` | 从 Obsidian vault 同步「知识库」目录 |
+| `npm run sync:vault` | 从 Obsidian vault 同步「别人的知识库」目录 |
 | `npm run setup:hooks` | 安装 pre-commit 钩子（每台新机器一次） |
 
 ## 安装 git 钩子（每台新机器一次）
@@ -44,5 +44,5 @@ npm run setup:hooks
 
 ## 更多约定
 
-写作规范、知识库同步边界（`docs/note/知识库/` 是 vault 镜像，禁直接放文件）、
+写作规范、知识库同步边界（`docs/note/别人的知识库/` 是 vault 镜像，禁直接放文件）、
 CI 行为等见 [AGENTS.md](AGENTS.md)。

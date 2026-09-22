@@ -1,4 +1,4 @@
-// 把 Obsidian 知识库（vault）的「基础知识」目录同步到博客 docs/note/知识库/。
+// 把 Obsidian 知识库（vault）的「基础知识」目录同步到博客 docs/note/别人的知识库/。
 // 可重复执行，每次都是一次完整的镜像同步：
 //   1. vault 里新增/修改的笔记转换后复制过来
 //   2. vault 里删除的笔记从博客中同步删除
@@ -20,7 +20,7 @@ const { formatDate } = require("./update-sidebar.js");
 
 // 源：vault 中的「基础知识」目录（00.Inbox 草稿、根目录元数据文件等不上博客）
 const DEFAULT_SOURCE = "E:\\obdsin\\笔记\\基础知识";
-const TARGET_DIR = path.join(__dirname, "..", "docs", "note", "知识库");
+const TARGET_DIR = path.join(__dirname, "..", "docs", "note", "别人的知识库");
 
 // 源目录内不迁移的子目录名（vault 的旧版归档，不上博客）
 const EXCLUDE_DIRS = new Set(["_归档"]);

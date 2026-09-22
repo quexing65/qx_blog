@@ -389,13 +389,13 @@ test("scanDirectory: 数字编号章节按编号升序且排在无编号文件�
   assert.deepStrictEqual(result.map((r) => r.title), ["01.第一章", "02.第二章", "10.第三章", "关于"]);
 });
 
-test("collectAllFiles: 排除指定分类（知识库不进首页文章流）", () => {
-  fs.mkdirSync(path.join(tmpDir, "知识库"));
-  fs.writeFileSync(path.join(tmpDir, "知识库", "01.教程.md"), "---\ndate: 2026-01-01\n---\nx");
+test("collectAllFiles: 排除指定分类（别人的知识库不进首页文章流）", () => {
+  fs.mkdirSync(path.join(tmpDir, "别人的知识库"));
+  fs.writeFileSync(path.join(tmpDir, "别人的知识库", "01.教程.md"), "---\ndate: 2026-01-01\n---\nx");
   fs.writeFileSync(path.join(tmpDir, "随笔.md"), "---\ndate: 2026-02-01\n---\nx");
 
   const structure = scanDirectory(tmpDir);
-  const files = collectAllFiles(structure, new Set(["知识库"]));
+  const files = collectAllFiles(structure, new Set(["别人的知识库"]));
   assert.deepStrictEqual(files.map((f) => f.title), ["随笔"]);
 });
 
