@@ -97,8 +97,10 @@
   - [魔法推荐](/note/墙外的世界/魔法推荐.md)
   - [宝可梦每月优惠口令](/note/墙外的世界/宝可梦每月优惠口令.md)
 - 我自己的笔记
+  - [Python常用函数](/note/我自己的笔记/Python常用函数.md)
   - [AI-agent概念学习](/note/我自己的笔记/AI-agent概念学习.md)
   - [docker](/note/我自己的笔记/docker.md)
+  - [redis](/note/我自己的笔记/redis.md)
   - [Python基础面经](/note/我自己的笔记/Python基础面经.md)
 - 一些励志语句
   - 蛊真人
