@@ -5,7 +5,7 @@
 
 ## 📌 最新文章
 
-- [宝可梦每月优惠口令](/note/墙外的世界/宝可梦每月优惠口令.md) <span class="article-date">发布于 2026-07-01 · 更新于 2026-10-08</span>
+- [宝可梦每月优惠口令](/note/墙外的世界/宝可梦每月优惠口令.md) <span class="article-date">发布于 2026-07-01 · 更新于 2026-11-12</span>
 - [redis](/note/我自己的笔记/redis.md) <span class="article-date">发布于 2026-09-23 · 更新于 2026-09-25</span>
 - [Python常用函数](/note/我自己的笔记/Python常用函数.md) <span class="article-date">发布于 2026-09-24 · 更新于 2026-09-24</span>
 - [AI-agent概念学习](/note/我自己的笔记/AI-agent概念学习.md) <span class="article-date">2026-09-23</span>
